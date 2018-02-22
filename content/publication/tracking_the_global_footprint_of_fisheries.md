@@ -34,9 +34,9 @@ selected = true
 projects = ["global-fishing-watch"]
 
 # Links (optional).
-url_pdf = "http://science.sciencemag.org/cgi/doi/10.1126/science.aao1118"
+url_pdf = "http://science.sciencemag.org/content/359/6378/904"
 url_code = "https://github.com/GlobalFishingWatch/global-footprint-of-fisheries"
-url_dataset = "#"
+url_dataset = "https://globalfishingwatch.force.com/gfw/s/data_download"
 url_project = "#"
 
 # Custom links (optional).
