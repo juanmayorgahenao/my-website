@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Juan S. Mayorga</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on Juan S. Mayorga</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Wed, 27 Apr 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Global Fishing Watch</title>
+      <link>/project/global-fishing-watch/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/project/global-fishing-watch/</guid>
+      <description>Global Fishing Watch uses satellite technology, big data analytics, and machine learning, to illuminate the world&amp;rsquo;s fishing fleets with unprecedented resolution. By providing the public, governments, researchers, and management bodies with a near-real-time dataset of global fisheries, Global Fishing Watch is facilitating a revolution in fisheries management towards transparency, sustainability, and effective marine conservation.
+Global Fishing Watch&amp;rsquo;s dynamic database represents the largest influx of new data into the fields of fisheries science and marine conservation.</description>
+    </item>
+    
+    <item>
+      <title>Pristine Seas</title>
+      <link>/project/pristine-seas/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/project/pristine-seas/</guid>
+      <description>Pristine Seas is a project created by National Geographic&amp;rsquo;s Explorer-in-residence Dr. Enric Sala, to explore, document, and help protect the last wild places of the Ocean. By combining science, storytelling, economics, and policy, Pristine Seas has successfully worked to protect 16 unique marine ecosystems all around the world, covering a total area of 5.1 million square kilometers.
+An important component of our work is to provide governments, not only with the ecological arguments to protect a special place, but also with the economic challenges and opportunities of creating a marine reserve.</description>
+    </item>
+    
+  </channel>
+</rss>
