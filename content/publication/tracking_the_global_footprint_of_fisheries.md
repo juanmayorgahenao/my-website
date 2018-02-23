@@ -36,12 +36,12 @@ projects = ["global-fishing-watch"]
 # Links (optional).
 url_pdf = "http://science.sciencemag.org/content/359/6378/904"
 url_code = "https://github.com/GlobalFishingWatch/global-footprint-of-fisheries"
-url_dataset = "https://globalfishingwatch.force.com/gfw/s/data_download"
-url_project = "#"
+url_dataset = "http://globalfishingwatch.io/"
+url_project = ""
 
 # Custom links (optional).
 #   Uncomment line below to enable. For multiple links, use the form `[{...}, {...}, {...}]`.
-url_custom = [{name = "Press release", url = "#"}]
+url_custom = [{name = "Press release", url = "https://www.eurekalert.org/pub_releases/2018-02/gfw-tff021618.php"}]
 
 # Does the content use math formatting?
 math = true
