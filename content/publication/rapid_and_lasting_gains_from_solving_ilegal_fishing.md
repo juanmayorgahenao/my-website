@@ -18,11 +18,10 @@ authors = ["R. Cabral", "**J. Mayorga**", "M. Clemence", "J. Lynham", "S. Koeshe
 publication_types = ["2"]
 
 # Publication name and optional abbreviated version.
-publication = "In *Nature Ecology & Evolution* (in press)"
+publication = "In *Nature Ecology & Evolution*"
 
 # Abstract and optional shortened version.
-# abstract = "Perhaps the greatest challenge facing global fisheries is that recovery often requires substantial short-term reductions in fishing effort, catches, and profits. These costs can be onerous and are borne in the present; thus many countries are unwilling to undertake such socially and politically unpopular actions. We argue that many nations can recover their fisheries while avoiding these short-term costs by sharply addressing illegal, unreported, and unregulated (IUU) fishing. This can spur fishery recovery, often at little or no cost to local economies or food provision. Indonesia recently implemented aggressive policies to curtail the high levels of IUU fishing it experiences from foreign-flagged vessels. We show that Indonesia’s policies reduced total fishing effort by at least 25%, illustrating with novel empirical evidence the possibility of achieving fishery reform without short-term losses to the local fishery economy. Compared to using typical management reforms that would require a 15% reduction in catch and 16% reduction in profit, the approach of curtailing IUU has the potential to generate a 14% and 12% increase in catch and profit, respectively. Applying this model globally, we find that addressing IUU fishing could facilitate similar rapid, long-lasting fisheries gains in many regions of the world"
-# abstract_short = ""
+abstract = "Perhaps the greatest challenge facing global fisheries is that recovery often requires substantial short-term reductions in fishing effort, catches, and profits. These costs can be onerous and are borne in the present; thus many countries are unwilling to undertake such socially and politically unpopular actions. We argue that many nations can recover their fisheries while avoiding these short-term costs by sharply addressing illegal, unreported, and unregulated (IUU) fishing. This can spur fishery recovery, often at little or no cost to local economies or food provision. Indonesia recently implemented aggressive policies to curtail the high levels of IUU fishing it experiences from foreign-flagged vessels. We show that Indonesia’s policies reduced total fishing effort by at least 25%, illustrating with novel empirical evidence the possibility of achieving fishery reform without short-term losses to the local fishery economy. Compared to using typical management reforms that would require a 15% reduction in catch and 16% reduction in profit, the approach of curtailing IUU has the potential to generate a 14% and 12% increase in catch and profit, respectively. Applying this model globally, we find that addressing IUU fishing could facilitate similar rapid, long-lasting fisheries gains in many regions of the world"
 
 # Featured image thumbnail (optional)
 image_preview = ""
@@ -36,10 +35,9 @@ selected = false
 projects = ["global-fishing-watch"]
 
 # Links (optional).
-url_pdf = "#"
-url_code = "#"
-url_dataset = "#"
-url_project = "#"
+url_pdf = "https://www.nature.com/articles/s41559-018-0499-1"
+url_code = "https://github.com/rencabral/Rapid-and-lasting-gains-from-solving-illegal-fishing"
+url_project = ""
 
 # Does the content use math formatting?
 math = true
