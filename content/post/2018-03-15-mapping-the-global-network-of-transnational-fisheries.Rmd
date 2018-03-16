@@ -3,8 +3,10 @@ title: Mapping the Global Network of Transnational Fisheries
 author: Juan S. Mayorga
 date: '2018-03-15'
 output:
-  blogdown::html_page:
-    toc: true
+  blogdown::
+    html_page:
+      theme: 
+      toc: true
 slug: mapping-the-global-network-of-transnational-fisheries
 categories: []
 tags: []

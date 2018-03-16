@@ -120,7 +120,8 @@ defaultContentLanguageInSubdir = false
   #     Enable global source code highlighting?  If false, you can
   #     override it for a particular page in that page's preamble.
   #
-  #     Example: highlight = true
+  #   Example: 
+  highlight = true
   #
   #   highlight_languages
   #     Add support for highlighting additional languages. Support for
@@ -130,6 +131,7 @@ defaultContentLanguageInSubdir = false
   #
   #     Example: highlight_languages = ["go", "lisp", "ocaml"]
   #
+  highlight_languages = ["go", "lisp", "ocaml"]
   #   highlight_style
   #     Choose a different CSS style for highlighting source
   #     code. Setting this option in a page's preamble has no
