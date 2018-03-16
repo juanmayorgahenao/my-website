@@ -16,7 +16,13 @@
       <pubDate>Thu, 15 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/mapping-the-global-network-of-transnational-fisheries/</guid>
-      <description>&lt;p&gt;Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: &lt;a href=&#34;http://science.sciencemag.org/content/359/6378/904&#34;&gt;“Tracking the global footprint of fisheries”&lt;/a&gt; introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?&lt;/p&gt;
+      <description>&lt;div id=&#34;TOC&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#the-dataset&#34;&gt;The dataset&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: &lt;a href=&#34;http://science.sciencemag.org/content/359/6378/904&#34;&gt;“Tracking the global footprint of fisheries”&lt;/a&gt; introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?&lt;/p&gt;
 &lt;p&gt;In this blog post, I’ll walk through how we used Global Fishing Watch data to make an interactive visualization of this network which is introduced in our recent publication: &lt;a href=&#34;http://dx.doi.org/10.1038/s41559-018-0499-1&#34;&gt;“Rapid and lasting gains from solving illegal fishing”&lt;/a&gt; published in the journal Nature Ecology &amp;amp; Evolution.&lt;/p&gt;
 &lt;p&gt;All the analysis is done in R, with Studio, using the following packages:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(maps)
