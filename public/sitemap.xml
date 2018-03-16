@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/test/</loc>
+      <lastmod>2018-03-15T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication/rapid_and_lasting_gains_from_solving_ilegal_fishing/</loc>
       <lastmod>2018-02-20T00:00:00+00:00</lastmod>
     </url>
@@ -86,6 +95,23 @@
     
     <url>
     
+      <loc>/post/2015-07-23-r-rmarkdown/</loc>
+      <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/2018-03-15-test/</loc>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication_types/2/</loc>
       <lastmod>2018-02-20T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -125,7 +151,9 @@
     
     <url>
     
-      <loc>/post/network_plot/</loc>
+      <loc>/tags/plot/</loc>
+      <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -155,6 +183,36 @@
     
       <loc>/publication_types/</loc>
       <lastmod>2018-02-20T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/r/</loc>
+      <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/r-markdown/</loc>
+      <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/regression/</loc>
+      <lastmod>2015-07-23T21:13:14-05:00</lastmod>
       <priority>0</priority>
     </url>
     
