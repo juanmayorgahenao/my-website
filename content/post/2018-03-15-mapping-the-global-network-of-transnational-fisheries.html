@@ -1,0 +1,116 @@
+---
+title: Mapping the Global Network of Transnational Fisheries
+author: Juan S. Mayorga
+date: '2018-03-15'
+slug: mapping-the-global-network-of-transnational-fisheries
+categories: []
+tags: []
+---
+
+
+
+<p>Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: <a href="http://science.sciencemag.org/content/359/6378/904">“Tracking the global footprint of fisheries”</a> introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?</p>
+<p>In this blog post, I’ll walk through how we used Global Fishing Watch data to make an interactive visualization of this network which is introduced in our recent publication: <a href="http://dx.doi.org/10.1038/s41559-018-0499-1">“Rapid and lasting gains from solving illegal fishing”</a> published in the journal Nature Ecology &amp; Evolution.</p>
+<p>All the analysis is done in R, with Studio, using the following packages:</p>
+<pre class="r"><code>library(maps)
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(scales)
+library(zeallot)</code></pre>
+<div id="the-dataset" class="section level2">
+<h2>The dataset</h2>
+<p>Global Fishing Watch data has been made available for free <a href="https://globalfishingwatch.force.com/gfw/s/data_download">here</a>. This includes daily data of fishing effort by vessel at 0.1º resolution, and data of vessel characteristics including flag state, gear type, length, and others.</p>
+<p>The first step is to summarize fishing effort by flag state and Exclusive Economic Zone. For that, we can use the EEZ shapefile provided by <a href="http://marineregions.org/">Marine Regions</a> and spatially join it with the summarized 0.1º resolution fishing effort data. In this blog post I will skip this step - it will be a separate post soon - and instead focus on making the visualization.</p>
+<p>Here is snippet of the dataset:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Italy</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">33</td>
+<td align="right">28767</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">12.93</td>
+<td align="right">39.66</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Libya</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">37</td>
+<td align="right">32158</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">18.50</td>
+<td align="right">33.14</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Malta</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">103</td>
+<td align="right">88729</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.11</td>
+<td align="right">35.31</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Montenegro</td>
+<td align="right">3</td>
+<td align="right">77</td>
+<td align="right">1083</td>
+<td align="right">313512</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">18.68</td>
+<td align="right">41.87</td>
+</tr>
+<tr class="even">
+<td align="left">Algeria</td>
+<td align="left">Italy</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="right">116</td>
+<td align="right">42833</td>
+<td align="right">3.54</td>
+<td align="right">37.20</td>
+<td align="right">12.93</td>
+<td align="right">39.66</td>
+</tr>
+</tbody>
+</table>
+</div>
