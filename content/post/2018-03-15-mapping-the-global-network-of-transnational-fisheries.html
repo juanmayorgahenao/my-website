@@ -9,19 +9,9 @@ slug: mapping-the-global-network-of-transnational-fisheries
 categories: []
 tags: []
 header:
-  image: "headers/getting-started.png"
-  caption: "Image credit: [**Academic**](https://github.com/gcushen/hugo-academic/)"
+  image: "headers/china-dwf.png"
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
-<link href="/rmarkdown-libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/datatables-binding/datatables.js"></script>
-<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js"></script>
-<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
 
 <div id="TOC">
 <ul>
@@ -34,7 +24,7 @@ header:
 </div>
 
 <p>Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: <a href="http://science.sciencemag.org/content/359/6378/904">“Tracking the global footprint of fisheries”</a> introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?</p>
-<p>In this blog post, I’ll walk through how we used Global Fishing Watch data to make an interactive visualization of this network which is introduced in our recent publication: <a href="http://dx.doi.org/10.1038/s41559-018-0499-1">“Rapid and lasting gains from solving illegal fishing”</a> published in the journal Nature Ecology &amp; Evolution.</p>
+<p>In this blog post, I’ll walk through how we used Global Fishing Watch data to make an <a href="https://sfg-ucsb.shinyapps.io/network-transboundary-fisheries/">interactive visualization</a> of this network which is introduced in our recent publication: <a href="http://dx.doi.org/10.1038/s41559-018-0499-1">“Rapid and lasting gains from solving illegal fishing”</a> published in the journal Nature Ecology &amp; Evolution.</p>
 <p>All the analysis is done in R, with Studio, using the following packages:</p>
 <pre class="r"><code>library(maps)
 library(tidyverse)
@@ -47,93 +37,233 @@ library(zeallot)</code></pre>
 <p>Global Fishing Watch data has been made available for free <a href="https://globalfishingwatch.force.com/gfw/s/data_download">here</a>. This includes daily data of fishing effort by vessel at 0.1º resolution, and data of vessel characteristics including flag state, gear type, length, and others.</p>
 <p>The first step is to summarize fishing effort by flag state and Exclusive Economic Zone. For that, we can use the EEZ shapefile provided by <a href="http://marineregions.org/">Marine Regions</a> and spatially join it with the summarized 0.1º resolution fishing effort data. In this blog post I will skip this step - it will be a separate post soon - and instead focus on making the visualization.</p>
 <p>Here is snippet of the dataset:</p>
-<table>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
-<tr class="header">
-<th align="left">flag</th>
-<th align="left">eez</th>
-<th align="right">fishing_vessels</th>
-<th align="right">fishing_days</th>
-<th align="right">fishing_hours</th>
-<th align="right">fishing_kWh</th>
-<th align="right">start_lon</th>
-<th align="right">start_lat</th>
-<th align="right">end_lon</th>
-<th align="right">end_lat</th>
+<tr>
+<th style="text-align:left;">
+flag
+</th>
+<th style="text-align:left;">
+eez
+</th>
+<th style="text-align:right;">
+fishing_vessels
+</th>
+<th style="text-align:right;">
+fishing_days
+</th>
+<th style="text-align:right;">
+fishing_hours
+</th>
+<th style="text-align:right;">
+fishing_kWh
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+end_lon
+</th>
+<th style="text-align:right;">
+end_lat
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Albania</td>
-<td align="left">Croatia</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">11</td>
-<td align="right">9630</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">15.65</td>
-<td align="right">43.43</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
 </tr>
-<tr class="even">
-<td align="left">Albania</td>
-<td align="left">Italy</td>
-<td align="right">1</td>
-<td align="right">5</td>
-<td align="right">33</td>
-<td align="right">28767</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">12.93</td>
-<td align="right">39.66</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Italy
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:right;">
+28767
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+12.93
+</td>
+<td style="text-align:right;">
+39.66
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Albania</td>
-<td align="left">Libya</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">37</td>
-<td align="right">32158</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">18.50</td>
-<td align="right">33.14</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Libya
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+32158
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+18.50
+</td>
+<td style="text-align:right;">
+33.14
+</td>
 </tr>
-<tr class="even">
-<td align="left">Albania</td>
-<td align="left">Malta</td>
-<td align="right">1</td>
-<td align="right">8</td>
-<td align="right">103</td>
-<td align="right">88729</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">15.11</td>
-<td align="right">35.31</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Malta
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+88729
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.11
+</td>
+<td style="text-align:right;">
+35.31
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Albania</td>
-<td align="left">Montenegro</td>
-<td align="right">3</td>
-<td align="right">77</td>
-<td align="right">1083</td>
-<td align="right">313512</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">18.68</td>
-<td align="right">41.87</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Montenegro
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+77
+</td>
+<td style="text-align:right;">
+1083
+</td>
+<td style="text-align:right;">
+313512
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+18.68
+</td>
+<td style="text-align:right;">
+41.87
+</td>
 </tr>
-<tr class="even">
-<td align="left">Algeria</td>
-<td align="left">Italy</td>
-<td align="right">3</td>
-<td align="right">12</td>
-<td align="right">116</td>
-<td align="right">42833</td>
-<td align="right">3.54</td>
-<td align="right">37.20</td>
-<td align="right">12.93</td>
-<td align="right">39.66</td>
+<tr>
+<td style="text-align:left;">
+Algeria
+</td>
+<td style="text-align:left;">
+Italy
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:right;">
+42833
+</td>
+<td style="text-align:right;">
+3.54
+</td>
+<td style="text-align:right;">
+37.20
+</td>
+<td style="text-align:right;">
+12.93
+</td>
+<td style="text-align:right;">
+39.66
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,61 +294,149 @@ library(zeallot)</code></pre>
   st_sf(geometry = .)%&gt;%
   bind_cols(network_data) %&gt;%
   select(everything(), geometry)</code></pre>
-<table>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
-<tr class="header">
-<th align="left">flag</th>
-<th align="left">eez</th>
-<th align="right">fishing_vessels</th>
-<th align="right">fishing_days</th>
-<th align="right">fishing_hours</th>
-<th align="right">fishing_kWh</th>
-<th align="right">start_lon</th>
-<th align="right">start_lat</th>
-<th align="right">end_lon</th>
-<th align="right">end_lat</th>
-<th align="left">geometry</th>
+<tr>
+<th style="text-align:left;">
+flag
+</th>
+<th style="text-align:left;">
+eez
+</th>
+<th style="text-align:right;">
+fishing_vessels
+</th>
+<th style="text-align:right;">
+fishing_days
+</th>
+<th style="text-align:right;">
+fishing_hours
+</th>
+<th style="text-align:right;">
+fishing_kWh
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+end_lon
+</th>
+<th style="text-align:right;">
+end_lat
+</th>
+<th style="text-align:left;">
+geometry
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Albania</td>
-<td align="left">Croatia</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">11</td>
-<td align="right">9630</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">15.65</td>
-<td align="right">43.43</td>
-<td align="left">c(19.11, 15.65, 40.93, 43.43)</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:left;">
+c(19.11, 15.65, 40.93, 43.43)
+</td>
 </tr>
-<tr class="even">
-<td align="left">Albania</td>
-<td align="left">Italy</td>
-<td align="right">1</td>
-<td align="right">5</td>
-<td align="right">33</td>
-<td align="right">28767</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">12.93</td>
-<td align="right">39.66</td>
-<td align="left">c(19.11, 12.93, 40.93, 39.66)</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Italy
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:right;">
+28767
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+12.93
+</td>
+<td style="text-align:right;">
+39.66
+</td>
+<td style="text-align:left;">
+c(19.11, 12.93, 40.93, 39.66)
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Albania</td>
-<td align="left">Libya</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">37</td>
-<td align="right">32158</td>
-<td align="right">19.11</td>
-<td align="right">40.93</td>
-<td align="right">18.50</td>
-<td align="right">33.14</td>
-<td align="left">c(19.11, 18.5, 40.93, 33.14)</td>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Libya
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+32158
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+18.50
+</td>
+<td style="text-align:right;">
+33.14
+</td>
+<td style="text-align:left;">
+c(19.11, 18.5, 40.93, 33.14)
+</td>
 </tr>
 </tbody>
 </table>
@@ -233,23 +451,23 @@ network_data_sf %&gt;%
   borders()+
   theme_minimal()+
   coord_sf(datum = NA)</code></pre>
-<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-5-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-5-1.png" width="1344" style="display: block; margin: auto;" /></p>
 </div>
 <div id="making-great-circles-work" class="section level2">
 <h2>Making Great Circles Work</h2>
 <p>The next step is to divide our <code>LINESTRING</code> - which currently has only two points - into multiple smaller segments along the corresponding great circle path. These great circles are what you often seen on airline magazines and represent the shortest path between two points on the surface of a sphere. The <code>sf</code> package has a handy function called <code>st_segmentize()</code> that does this and we can specify the length of each segment.</p>
 <pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
   st_segmentize(units::set_units(100, km)) </code></pre>
-<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-7-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-7-1.png" width="1344" style="display: block; margin: auto;" /></p>
 <p>Oh no! While <code>st_segmentize()</code> worked and produced the correct path of the great circle, the function does not care about the dateline. In the future, this will be addressed in the <code>sf</code> package, but in the meantime we can manually re-scale our longitudes to [-180,180], which gives us:</p>
 <pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
   mutate(geometry = (geometry + c(180,90)) %% c(360) - c(180,90))</code></pre>
-<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-9-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-9-1.png" width="1344" style="display: block; margin: auto;" /></p>
 <p>So close!! Our line does not know that it needs to break at the dateline. So, for this we wrap our <code>LINESTRING</code> around the dateline using the aptly named <code>st_wrap_dateline()</code> function. A side effect of the <code>st_wrap_dateline()</code> is that our geometry type is no longer <code>LINESTRING</code> but <code>GEOMETRY</code>. This is because each simple feature that crosses the dateline is split into two becoming a <code>MULTILINESTRING</code>. When we combine more than one type of single simple feature in a collection (e.g, <code>MULTILINESTRING</code> and <code>LINESTRING</code>), the overall geometry type becomes <code>GEOMETRY</code>.</p>
 <pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
   st_wrap_dateline(options = c(&quot;WRAPDATELINE=YES&quot;,  &quot;DATELINEOFFSET=180&quot;), quiet = TRUE) %&gt;% 
   sf::st_sf(crs = 4326)</code></pre>
-<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-11-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-11-1.png" width="1344" style="display: block; margin: auto;" /></p>
 </div>
 <div id="visualizing-directionality" class="section level2">
 <h2>Visualizing directionality</h2>
@@ -278,24 +496,10 @@ L2
 <tbody>
 <tr>
 <td style="text-align:right;">
-19.11000
+19.11
 </td>
 <td style="text-align:right;">
-40.93000
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-18.27039
-</td>
-<td style="text-align:right;">
-41.56461
+40.93
 </td>
 <td style="text-align:right;">
 1
@@ -306,24 +510,10 @@ L2
 </tr>
 <tr>
 <td style="text-align:right;">
-17.41421
+18.27
 </td>
 <td style="text-align:right;">
-42.19299
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-16.54093
-</td>
-<td style="text-align:right;">
-42.81488
+41.56
 </td>
 <td style="text-align:right;">
 1
@@ -334,10 +524,10 @@ L2
 </tr>
 <tr>
 <td style="text-align:right;">
-15.65000
+17.41
 </td>
 <td style="text-align:right;">
-43.43000
+42.19
 </td>
 <td style="text-align:right;">
 1
@@ -348,10 +538,38 @@ L2
 </tr>
 <tr>
 <td style="text-align:right;">
-19.11000
+16.54
 </td>
 <td style="text-align:right;">
-40.93000
+42.81
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
 </td>
 <td style="text-align:right;">
 1
@@ -369,15 +587,283 @@ L2
   rename(subline_id = L1) %&gt;%   
   nest(-L2)
   )</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","data":[["1"],["Albania"],["Croatia"],[1],[2],[11],[9630],[19.11],[40.93],[15.65],[43.43],[1],[{"X":[19.11,18.2703942103055,17.4142148534604,16.5409297455863,15.65],"Y":[40.93,41.5646106334205,42.1929929541022,42.8148815460332,43.43],"subline_id":[1,1,1,1,1]}],[[[19.11,40.93],[18.2703942103055,41.5646106334205],[17.4142148534604,42.1929929541022],[16.5409297455863,42.8148815460332],[15.65,43.43]]]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>flag<\/th>\n      <th>eez<\/th>\n      <th>fishing_vessels<\/th>\n      <th>fishing_days<\/th>\n      <th>fishing_hours<\/th>\n      <th>fishing_kWh<\/th>\n      <th>start_lon<\/th>\n      <th>start_lat<\/th>\n      <th>end_lon<\/th>\n      <th>end_lat<\/th>\n      <th>line_id<\/th>\n      <th>coords<\/th>\n      <th>geometry<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7,8,9,10,11]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+flag
+</th>
+<th style="text-align:left;">
+eez
+</th>
+<th style="text-align:right;">
+fishing_vessels
+</th>
+<th style="text-align:right;">
+fishing_days
+</th>
+<th style="text-align:right;">
+fishing_hours
+</th>
+<th style="text-align:right;">
+fishing_kWh
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+end_lon
+</th>
+<th style="text-align:right;">
+end_lat
+</th>
+<th style="text-align:right;">
+line_id
+</th>
+<th style="text-align:left;">
+coords
+</th>
+<th style="text-align:left;">
+geometry
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+list(X = c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65), Y = c(40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43), subline_id = c(1, 1, 1, 1, 1))
+</td>
+<td style="text-align:left;">
+c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Now, that we have our tibble with a list-column containing all coordinates for each path, we need to calculate the cumulative distances for each point and use a color gradient to represent them. To my knowledge, the easiest way to this requires us to leave the <code>sf</code> package. To do this, we get rid of the geometry list-column of our tibble and unnest it. This produces a very long tibble where each row represent a point is great circle path between two locations.</p>
 <pre class="r"><code>paths &lt;- network_data_sf %&gt;% 
   sf::st_set_geometry(NULL) %&gt;% 
   unnest() %&gt;% 
   mutate_at(vars(X,Y), round,2)</code></pre>
-<div id="htmlwidget-2" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"filter":"none","data":[["1","2","3"],["Albania","Albania","Albania"],["Croatia","Croatia","Croatia"],[1,1,1],[2,2,2],[11,11,11],[9630,9630,9630],[19.11,19.11,19.11],[40.93,40.93,40.93],[15.65,15.65,15.65],[43.43,43.43,43.43],[1,1,1],[19.11,18.27,17.41],[40.93,41.56,42.19],[1,1,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>flag<\/th>\n      <th>eez<\/th>\n      <th>fishing_vessels<\/th>\n      <th>fishing_days<\/th>\n      <th>fishing_hours<\/th>\n      <th>fishing_kWh<\/th>\n      <th>start_lon<\/th>\n      <th>start_lat<\/th>\n      <th>end_lon<\/th>\n      <th>end_lat<\/th>\n      <th>line_id<\/th>\n      <th>X<\/th>\n      <th>Y<\/th>\n      <th>subline_id<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7,8,9,10,11,12,13,14]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+flag
+</th>
+<th style="text-align:left;">
+eez
+</th>
+<th style="text-align:right;">
+fishing_vessels
+</th>
+<th style="text-align:right;">
+fishing_days
+</th>
+<th style="text-align:right;">
+fishing_hours
+</th>
+<th style="text-align:right;">
+fishing_kWh
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+end_lon
+</th>
+<th style="text-align:right;">
+end_lat
+</th>
+<th style="text-align:right;">
+line_id
+</th>
+<th style="text-align:right;">
+X
+</th>
+<th style="text-align:right;">
+Y
+</th>
+<th style="text-align:right;">
+subline_id
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+18.27
+</td>
+<td style="text-align:right;">
+41.56
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+17.41
+</td>
+<td style="text-align:right;">
+42.19
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
 <p>To calculate the distance traveled, we use the Haversine method, implemented in the function <code>distHaversine()</code> from the <code>geosphere</code> package. We wrap that function and then map it along our data using the <code>pmap()</code> function. Finally we re-scale the distance from [0,1] for each path.</p>
 <pre class="r"><code>estimate_distance_traveled &lt;- function(start_lon, start_lat, current_lon, current_lat){
   
@@ -393,8 +879,212 @@ paths &lt;- paths %&gt;%
   group_by(line_id) %&gt;% 
   mutate(normalized_distance = round(distance/max(distance),2)) %&gt;% 
   ungroup()</code></pre>
-<div id="htmlwidget-3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3">{"x":{"filter":"none","data":[["1","2","3"],["Albania","Albania","Albania"],["Croatia","Croatia","Croatia"],[1,1,1],[2,2,2],[11,11,11],[9630,9630,9630],[19.11,19.11,19.11],[40.93,40.93,40.93],[15.65,15.65,15.65],[43.43,43.43,43.43],[1,1,1],[19.11,18.27,17.41],[40.93,41.56,42.19],[1,1,1],[0,99305.1156213392,199303.107777257],[0,0.25,0.5]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>flag<\/th>\n      <th>eez<\/th>\n      <th>fishing_vessels<\/th>\n      <th>fishing_days<\/th>\n      <th>fishing_hours<\/th>\n      <th>fishing_kWh<\/th>\n      <th>start_lon<\/th>\n      <th>start_lat<\/th>\n      <th>end_lon<\/th>\n      <th>end_lat<\/th>\n      <th>line_id<\/th>\n      <th>X<\/th>\n      <th>Y<\/th>\n      <th>subline_id<\/th>\n      <th>distance<\/th>\n      <th>normalized_distance<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7,8,9,10,11,12,13,14,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+flag
+</th>
+<th style="text-align:left;">
+eez
+</th>
+<th style="text-align:right;">
+fishing_vessels
+</th>
+<th style="text-align:right;">
+fishing_days
+</th>
+<th style="text-align:right;">
+fishing_hours
+</th>
+<th style="text-align:right;">
+fishing_kWh
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+end_lon
+</th>
+<th style="text-align:right;">
+end_lat
+</th>
+<th style="text-align:right;">
+line_id
+</th>
+<th style="text-align:right;">
+X
+</th>
+<th style="text-align:right;">
+Y
+</th>
+<th style="text-align:right;">
+subline_id
+</th>
+<th style="text-align:right;">
+distance
+</th>
+<th style="text-align:right;">
+normalized_distance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+18.27
+</td>
+<td style="text-align:right;">
+41.56
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+99305.12
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Albania
+</td>
+<td style="text-align:left;">
+Croatia
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9630
+</td>
+<td style="text-align:right;">
+19.11
+</td>
+<td style="text-align:right;">
+40.93
+</td>
+<td style="text-align:right;">
+15.65
+</td>
+<td style="text-align:right;">
+43.43
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+17.41
+</td>
+<td style="text-align:right;">
+42.19
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+199303.11
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="final-plotting" class="section level2">
 <h2>Final plotting</h2>
@@ -434,5 +1124,5 @@ paths &lt;- paths %&gt;%
         Line transparency is proportional to fishing effort.\n
         Circle size is proportional to the total foreign fishing effort in each EEZ. \n
         Data from Global Fishing Watch (2013-2016).&quot;))</code></pre>
-<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-20-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-20-1.png" width="200%" style="display: block; margin: auto;" /></p>
 </div>

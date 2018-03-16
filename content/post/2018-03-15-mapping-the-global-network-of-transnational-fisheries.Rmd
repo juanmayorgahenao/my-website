@@ -9,13 +9,14 @@ slug: mapping-the-global-network-of-transnational-fisheries
 categories: []
 tags: []
 header:
-  image: "headers/getting-started.png"
-  caption: "Image credit: [**Academic**](https://github.com/gcushen/hugo-academic/)"
+  image: "headers/china-dwf.png"
 ---
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 400)
+```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.width=15, fig.height=10, fig.align = 'center', fig.retina = 2)
-
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.width = 14, fig.height = 10, fig.align = 'center', fig.retina = 2)
 library(tidyverse)
 library(rnaturalearth)
 library(sf)
@@ -25,7 +26,7 @@ library(zeallot)
 
 Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: [“Tracking the global footprint of fisheries”](http://science.sciencemag.org/content/359/6378/904) introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?
 
-In this blog post, I’ll walk through how we used Global Fishing Watch data to make an interactive visualization of this network which is introduced in our recent publication: [“Rapid and lasting gains from solving illegal fishing”](http://dx.doi.org/10.1038/s41559-018-0499-1) published in the journal Nature Ecology & Evolution. 
+In this blog post, I’ll walk through how we used Global Fishing Watch data to make an [interactive visualization](https://sfg-ucsb.shinyapps.io/network-transboundary-fisheries/)  of this network which is introduced in our recent publication: [“Rapid and lasting gains from solving illegal fishing”](http://dx.doi.org/10.1038/s41559-018-0499-1) published in the journal Nature Ecology & Evolution. 
 
 All the analysis is done in R, with Studio, using the following packages:
 
@@ -56,7 +57,8 @@ network_data <- read_csv("blog_source_files/network_data.csv", progress = FALSE)
 
 network_data %>% 
   head() %>% 
-  knitr::kable()
+  knitr::kable('html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 where:
@@ -95,7 +97,8 @@ network_data_sf <- network_data %>%
 
 ```{r echo = F}
 head(network_data_sf, 3) %>% 
-  knitr::kable()
+  knitr::kable('html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 We now have a special class of dataframe (a [tibble](http://tibble.tidyverse.org/) to be precise) with a list-column that contains the geometry features we just created (i.e.,one `LINESTRING` per row). Lets use the function `geom_sf()` from the `ggplot2` package to take a look at one line connecting Vanuatu to Chile:
@@ -185,7 +188,7 @@ st_coordinates(st_cast(network_data_sf,"MULTILINESTRING")$geometry) %>%
   as_data_frame() %>% 
   mutate_if(is.numeric, round,2) %>% 
   head() %>% 
-  knitr::kable() %>%
+  knitr::kable('html') %>%
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
@@ -200,10 +203,12 @@ c(network_data_sf$line_id, network_data_sf$coords) %<-% (
   )
 ```
 
-```{r echo = F}
+```{r echo = F, results = 'asis'}
 network_data_sf %>% 
   head(1) %>% 
-  DT::datatable()
+  knitr::kable('html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% 
+  kableExtra::scroll_box(width = "100%")
 ```
 
 
@@ -219,7 +224,8 @@ paths <- network_data_sf %>%
 ```{r, echo = F}
 paths %>% 
   head(3) %>% 
-  DT::datatable()
+  knitr::kable('html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 To calculate the distance traveled, we use the Haversine method, implemented in the function `distHaversine()` from the `geosphere` package. We wrap that function and then map it along our data using the `pmap()` function. Finally we re-scale the distance from [0,1] for each path.
@@ -244,14 +250,15 @@ paths <- paths %>%
 ```{r, echo = F}
 paths %>% 
   head(3) %>% 
-  DT::datatable()
+  knitr::kable('html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 ## Final plotting
 
 We finally have our dataset ready, and using `ggplot` and a nice basemap of the world from `rnaturalearth` we can easily make our map of the Global Network of Transnational Fisheries!
 
-```{r, }
+```{r, out.width = '200%' }
 (network_map <- ggplot() +
    geom_sf(data = world_map, size = .2, fill = "gray30", col = "gray30") +
    geom_point(data = network_data %>%
