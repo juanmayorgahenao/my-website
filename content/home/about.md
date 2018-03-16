@@ -10,7 +10,7 @@ weight = 5
 # List your academic interests.
 [interests]
   interests = [
-    "Data Science",
+    "Data Scienc",
     "Marine Conservation Technology",
     "Underwater Photography",
     "Marine Ecology",
