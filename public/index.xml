@@ -16,9 +16,23 @@
       <pubDate>Thu, 15 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/mapping-the-global-network-of-transnational-fisheries/</guid>
-      <description>&lt;div id=&#34;TOC&#34;&gt;
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/datatables-css/datatables-crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/datatables-binding/datatables.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;link href=&#34;/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+
+&lt;div id=&#34;TOC&#34;&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;#the-dataset&#34;&gt;The dataset&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#making-the-dataset-spatial&#34;&gt;Making the dataset spatial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#making-great-circles-work&#34;&gt;Making Great Circles Work&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#visualizing-directionality&#34;&gt;Visualizing directionality&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#final-plotting&#34;&gt;Final plotting&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 
@@ -140,16 +154,292 @@ library(zeallot)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;We have excluded here 1) the connections between EU members states 2) the EU Northern agreements with Norway, and Iceland, 3) connections between sovereign states, e,g: France and Reunion and 4) disputed or jointly managed marine territories.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;CAVEAT:&lt;/strong&gt; The coordinates here do not refer to the actual port, or coastline from where vessels are fishing from or fishing in. These are merely for national-level visualization purposes.&lt;/p&gt;
 &lt;/div&gt;
+&lt;div id=&#34;making-the-dataset-spatial&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Making the dataset spatial&lt;/h2&gt;
+&lt;p&gt;After importing the data, we need to convert it to a &lt;strong&gt;simple features dataframe&lt;/strong&gt;, where each row corresponds to a line that connects the start and end points or - in our case - the flag state and the EEZ. For that we will use handy functions from the &lt;code&gt;sf&lt;/code&gt; and &lt;code&gt;purrr&lt;/code&gt; packages. If you are new to both these packages, two great tutorials are this &lt;a href=&#34;https://jennybc.github.io/purrr-tutorial/&#34;&gt;purrr tutorial&lt;/a&gt; by Jenny Brian and &lt;a href=&#34;https://edzer.github.io/UseR2017/&#34;&gt;Spatial Data in R: New Directions&lt;/a&gt; by Edzer Pebesma. Parts of this blog post are borrowed from the post &lt;a href=&#34;http://www.visibledata.co.uk/blog/2018/02/28/2018-02-28_great-circles-with-sf-and-leaflet/&#34;&gt;Great circles with sf and leaflet&lt;/a&gt; by Martin John Hadley.&lt;/p&gt;
+&lt;p&gt;First, lets create a &lt;code&gt;LINESTRING&lt;/code&gt; simple feature for each row of our dataframe and create a simple features dataframe of our data. &lt;code&gt;LINESTRING&lt;/code&gt;s are one-dimensional geometries the contain a “sequence of points connected by straight, non-self intersecting line pieces”. We can create them by making matrices of our start and end coordinates and then mapping the &lt;code&gt;st_linestring()&lt;/code&gt; function across them. We also need to set the coordinate reference system to WGS84 as we are using lat/long coordinates.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;network_data_sf &amp;lt;- network_data %&amp;gt;%
+  select(start_lon, start_lat, end_lon, end_lat) %&amp;gt;% 
+  purrr::transpose() %&amp;gt;% 
+  purrr::map(~ matrix(flatten_dbl(.), nrow = 2, byrow = TRUE)) %&amp;gt;% 
+  purrr::map(st_linestring) %&amp;gt;%
+  st_sfc(crs = 4326) %&amp;gt;%
+  st_sf(geometry = .)%&amp;gt;%
+  bind_cols(network_data) %&amp;gt;%
+  select(everything(), geometry)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;flag&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;eez&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;fishing_vessels&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;fishing_days&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;fishing_hours&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;fishing_kWh&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;start_lon&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;start_lat&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;end_lon&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;end_lat&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;geometry&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Albania&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Croatia&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9630&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;43.43&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;c(19.11, 15.65, 40.93, 43.43)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Albania&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Italy&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;28767&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;39.66&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;c(19.11, 12.93, 40.93, 39.66)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Albania&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Libya&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;37&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32158&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;33.14&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;c(19.11, 18.5, 40.93, 33.14)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We now have a special class of dataframe (a &lt;a href=&#34;http://tibble.tidyverse.org/&#34;&gt;tibble&lt;/a&gt; to be precise) with a list-column that contains the geometry features we just created (i.e.,one &lt;code&gt;LINESTRING&lt;/code&gt; per row). Lets use the function &lt;code&gt;geom_sf()&lt;/code&gt; from the &lt;code&gt;ggplot2&lt;/code&gt; package to take a look at one line connecting Vanuatu to Chile:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;world_map &amp;lt;- rnaturalearth::ne_countries(scale = &amp;#39;small&amp;#39;, returnclass = c(&amp;quot;sf&amp;quot;))
+
+network_data_sf %&amp;gt;% 
+  filter(eez == &amp;quot;Chile&amp;quot;, flag == &amp;quot;Vanuatu&amp;quot;) %&amp;gt;% 
+  ggplot() +
+  borders()+
+  geom_sf(col = &amp;quot;blue&amp;quot;)+
+  borders()+
+  theme_minimal()+
+  coord_sf(datum = NA)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;1440&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;making-great-circles-work&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Making Great Circles Work&lt;/h2&gt;
+&lt;p&gt;The next step is to divide our &lt;code&gt;LINESTRING&lt;/code&gt; - which currently has only two points - into multiple smaller segments along the corresponding great circle path. These great circles are what you often seen on airline magazines and represent the shortest path between two points on the surface of a sphere. The &lt;code&gt;sf&lt;/code&gt; package has a handy function called &lt;code&gt;st_segmentize()&lt;/code&gt; that does this and we can specify the length of each segment.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;network_data_sf &amp;lt;- network_data_sf %&amp;gt;% 
+  st_segmentize(units::set_units(100, km)) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;1440&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Oh no! While &lt;code&gt;st_segmentize()&lt;/code&gt; worked and produced the correct path of the great circle, the function does not care about the dateline. In the future, this will be addressed in the &lt;code&gt;sf&lt;/code&gt; package, but in the meantime we can manually re-scale our longitudes to [-180,180], which gives us:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;network_data_sf &amp;lt;- network_data_sf %&amp;gt;% 
+  mutate(geometry = (geometry + c(180,90)) %% c(360) - c(180,90))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;1440&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;So close!! Our line does not know that it needs to break at the dateline. So, for this we wrap our &lt;code&gt;LINESTRING&lt;/code&gt; around the dateline using the aptly named &lt;code&gt;st_wrap_dateline()&lt;/code&gt; function. A side effect of the &lt;code&gt;st_wrap_dateline()&lt;/code&gt; is that our geometry type is no longer &lt;code&gt;LINESTRING&lt;/code&gt; but &lt;code&gt;GEOMETRY&lt;/code&gt;. This is because each simple feature that crosses the dateline is split into two becoming a &lt;code&gt;MULTILINESTRING&lt;/code&gt;. When we combine more than one type of single simple feature in a collection (e.g, &lt;code&gt;MULTILINESTRING&lt;/code&gt; and &lt;code&gt;LINESTRING&lt;/code&gt;), the overall geometry type becomes &lt;code&gt;GEOMETRY&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;network_data_sf &amp;lt;- network_data_sf %&amp;gt;% 
+  st_wrap_dateline(options = c(&amp;quot;WRAPDATELINE=YES&amp;quot;,  &amp;quot;DATELINEOFFSET=180&amp;quot;), quiet = TRUE) %&amp;gt;% 
+  sf::st_sf(crs = 4326)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;1440&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;visualizing-directionality&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Visualizing directionality&lt;/h2&gt;
+&lt;p&gt;We now have our paths right, however, we still need to visualize the directionality. Where does a path start and end?. A common idea is to add arrows to the lines, but, since we will be plotting many many lines on the same graph this will not be optimal. My solution to this is to use a blue-red color gradient to represent the cumulative distance traveled from the starting point. This way we will have the starting points - representing sources of fishing effort - represented in blue, and end point - sinks of foreign fishing effort - represented in red. This will allow us to visualize patterns and hotspots more readily.&lt;/p&gt;
+&lt;p&gt;So, how do we do this? First, we need to unpack the &lt;code&gt;LINESTRING&lt;/code&gt;s into their coordinates, while keeping track of the line ID’s. Second, we calculate the distance traveled between the starting point and each position along the paths and 3) we use the color gradient to represent the distance traveled. Ready, set, go.&lt;/p&gt;
+&lt;p&gt;We can use the &lt;code&gt;st_coordinates()&lt;/code&gt; function to unpack the coordinates of each feature but first we need to change the type of our simple feature dataframe from &lt;code&gt;GEOMETRY&lt;/code&gt; to &lt;code&gt;MULTILINESTRING&lt;/code&gt; using the &lt;code&gt;st_cast()&lt;/code&gt; function.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;st_coordinates(st_cast(network_data_sf,&amp;quot;MULTILINESTRING&amp;quot;)$geometry) %&amp;gt;% 
+  as_data_frame() &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Y
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+L1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+L2
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.11000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+40.93000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.27039
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+41.56461
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+17.41421
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+42.19299
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.54093
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+42.81488
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15.65000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+43.43000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.11000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+40.93000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The resulting dataframe contains all the coordinates of each line and the corresponding line IDs. L2 is the main path (e.g., Vanuatu to Chile), and L1 is the ID of the resulting sublines when a line crosses the dateline. We can then nest our dataframe by line id and assign this to our data frame using the clever &lt;code&gt;%&amp;lt;-%&lt;/code&gt; operator from the &lt;code&gt;zeallot&lt;/code&gt; &lt;a href=&#34;https://www.rstudio.com/resources/videos/an-assignment-operator-to-unpack-vectors-and-lists/&#34;&gt;package.&lt;/a&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;c(network_data_sf$line_id, network_data_sf$coords) %&amp;lt;-% (
+  st_coordinates(st_cast(network_data_sf,&amp;quot;MULTILINESTRING&amp;quot;)$geometry) %&amp;gt;% 
+  as_data_frame() %&amp;gt;% 
+  rename(subline_id = L1) %&amp;gt;%   
+  nest(-L2)
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:auto;&#34; class=&#34;datatables html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;],[&#34;Albania&#34;],[&#34;Croatia&#34;],[1],[2],[11],[9630],[19.11],[40.93],[15.65],[43.43],[1],[{&#34;X&#34;:[19.11,18.2703942103055,17.4142148534604,16.5409297455863,15.65],&#34;Y&#34;:[40.93,41.5646106334205,42.1929929541022,42.8148815460332,43.43],&#34;subline_id&#34;:[1,1,1,1,1]}],[[[19.11,40.93],[18.2703942103055,41.5646106334205],[17.4142148534604,42.1929929541022],[16.5409297455863,42.8148815460332],[15.65,43.43]]]],&#34;container&#34;:&#34;&lt;table class=\&#34;display\&#34;&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt; &lt;\/th&gt;\n      &lt;th&gt;flag&lt;\/th&gt;\n      &lt;th&gt;eez&lt;\/th&gt;\n      &lt;th&gt;fishing_vessels&lt;\/th&gt;\n      &lt;th&gt;fishing_days&lt;\/th&gt;\n      &lt;th&gt;fishing_hours&lt;\/th&gt;\n      &lt;th&gt;fishing_kWh&lt;\/th&gt;\n      &lt;th&gt;start_lon&lt;\/th&gt;\n      &lt;th&gt;start_lat&lt;\/th&gt;\n      &lt;th&gt;end_lon&lt;\/th&gt;\n      &lt;th&gt;end_lat&lt;\/th&gt;\n      &lt;th&gt;line_id&lt;\/th&gt;\n      &lt;th&gt;coords&lt;\/th&gt;\n      &lt;th&gt;geometry&lt;\/th&gt;\n    &lt;\/tr&gt;\n  &lt;\/thead&gt;\n&lt;\/table&gt;&#34;,&#34;options&#34;:{&#34;columnDefs&#34;:[{&#34;className&#34;:&#34;dt-right&#34;,&#34;targets&#34;:[3,4,5,6,7,8,9,10,11]},{&#34;orderable&#34;:false,&#34;targets&#34;:0}],&#34;order&#34;:[],&#34;autoWidth&#34;:false,&#34;orderClasses&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;Now, that we have our tibble with a list-column containing all coordinates for each path, we need to calculate the cumulative distances for each point and use a color gradient to represent them. To my knowledge, the easiest way to this requires us to leave the &lt;code&gt;sf&lt;/code&gt; package. To do this, we get rid of the geometry list-column of our tibble and unnest it. This produces a very long tibble where each row represent a point is great circle path between two locations.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;paths &amp;lt;- network_data_sf %&amp;gt;% 
+  sf::st_set_geometry(NULL) %&amp;gt;% 
+  unnest() %&amp;gt;% 
+  mutate_at(vars(X,Y), round,2)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:100%;height:auto;&#34; class=&#34;datatables html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;],[&#34;Albania&#34;,&#34;Albania&#34;,&#34;Albania&#34;],[&#34;Croatia&#34;,&#34;Croatia&#34;,&#34;Croatia&#34;],[1,1,1],[2,2,2],[11,11,11],[9630,9630,9630],[19.11,19.11,19.11],[40.93,40.93,40.93],[15.65,15.65,15.65],[43.43,43.43,43.43],[1,1,1],[19.11,18.27,17.41],[40.93,41.56,42.19],[1,1,1]],&#34;container&#34;:&#34;&lt;table class=\&#34;display\&#34;&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt; &lt;\/th&gt;\n      &lt;th&gt;flag&lt;\/th&gt;\n      &lt;th&gt;eez&lt;\/th&gt;\n      &lt;th&gt;fishing_vessels&lt;\/th&gt;\n      &lt;th&gt;fishing_days&lt;\/th&gt;\n      &lt;th&gt;fishing_hours&lt;\/th&gt;\n      &lt;th&gt;fishing_kWh&lt;\/th&gt;\n      &lt;th&gt;start_lon&lt;\/th&gt;\n      &lt;th&gt;start_lat&lt;\/th&gt;\n      &lt;th&gt;end_lon&lt;\/th&gt;\n      &lt;th&gt;end_lat&lt;\/th&gt;\n      &lt;th&gt;line_id&lt;\/th&gt;\n      &lt;th&gt;X&lt;\/th&gt;\n      &lt;th&gt;Y&lt;\/th&gt;\n      &lt;th&gt;subline_id&lt;\/th&gt;\n    &lt;\/tr&gt;\n  &lt;\/thead&gt;\n&lt;\/table&gt;&#34;,&#34;options&#34;:{&#34;columnDefs&#34;:[{&#34;className&#34;:&#34;dt-right&#34;,&#34;targets&#34;:[3,4,5,6,7,8,9,10,11,12,13,14]},{&#34;orderable&#34;:false,&#34;targets&#34;:0}],&#34;order&#34;:[],&#34;autoWidth&#34;:false,&#34;orderClasses&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;To calculate the distance traveled, we use the Haversine method, implemented in the function &lt;code&gt;distHaversine()&lt;/code&gt; from the &lt;code&gt;geosphere&lt;/code&gt; package. We wrap that function and then map it along our data using the &lt;code&gt;pmap()&lt;/code&gt; function. Finally we re-scale the distance from [0,1] for each path.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;estimate_distance_traveled &amp;lt;- function(start_lon, start_lat, current_lon, current_lat){
+  
+  start_coords &amp;lt;- c(start_lon, start_lat)
+  current_coords &amp;lt;- c(current_lon, current_lat)
+  
+  geosphere::distHaversine(current_coords,start_coords)
+  
+}
+
+paths &amp;lt;- paths %&amp;gt;% 
+  mutate(distance = purrr::pmap_dbl(list(start_lon, start_lat, X, Y), estimate_distance_traveled)) %&amp;gt;% 
+  group_by(line_id) %&amp;gt;% 
+  mutate(normalized_distance = round(distance/max(distance),2)) %&amp;gt;% 
+  ungroup()&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:100%;height:auto;&#34; class=&#34;datatables html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;],[&#34;Albania&#34;,&#34;Albania&#34;,&#34;Albania&#34;],[&#34;Croatia&#34;,&#34;Croatia&#34;,&#34;Croatia&#34;],[1,1,1],[2,2,2],[11,11,11],[9630,9630,9630],[19.11,19.11,19.11],[40.93,40.93,40.93],[15.65,15.65,15.65],[43.43,43.43,43.43],[1,1,1],[19.11,18.27,17.41],[40.93,41.56,42.19],[1,1,1],[0,99305.1156213392,199303.107777257],[0,0.25,0.5]],&#34;container&#34;:&#34;&lt;table class=\&#34;display\&#34;&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt; &lt;\/th&gt;\n      &lt;th&gt;flag&lt;\/th&gt;\n      &lt;th&gt;eez&lt;\/th&gt;\n      &lt;th&gt;fishing_vessels&lt;\/th&gt;\n      &lt;th&gt;fishing_days&lt;\/th&gt;\n      &lt;th&gt;fishing_hours&lt;\/th&gt;\n      &lt;th&gt;fishing_kWh&lt;\/th&gt;\n      &lt;th&gt;start_lon&lt;\/th&gt;\n      &lt;th&gt;start_lat&lt;\/th&gt;\n      &lt;th&gt;end_lon&lt;\/th&gt;\n      &lt;th&gt;end_lat&lt;\/th&gt;\n      &lt;th&gt;line_id&lt;\/th&gt;\n      &lt;th&gt;X&lt;\/th&gt;\n      &lt;th&gt;Y&lt;\/th&gt;\n      &lt;th&gt;subline_id&lt;\/th&gt;\n      &lt;th&gt;distance&lt;\/th&gt;\n      &lt;th&gt;normalized_distance&lt;\/th&gt;\n    &lt;\/tr&gt;\n  &lt;\/thead&gt;\n&lt;\/table&gt;&#34;,&#34;options&#34;:{&#34;columnDefs&#34;:[{&#34;className&#34;:&#34;dt-right&#34;,&#34;targets&#34;:[3,4,5,6,7,8,9,10,11,12,13,14,15,16]},{&#34;orderable&#34;:false,&#34;targets&#34;:0}],&#34;order&#34;:[],&#34;autoWidth&#34;:false,&#34;orderClasses&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;final-plotting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Final plotting&lt;/h2&gt;
+&lt;p&gt;We finally have our dataset ready, and using &lt;code&gt;ggplot&lt;/code&gt; and a nice basemap of the world from &lt;code&gt;rnaturalearth&lt;/code&gt; we can easily make our map of the Global Network of Transnational Fisheries!&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;(network_map &amp;lt;- ggplot() +
+   geom_sf(data = world_map, size = .2, fill = &amp;quot;gray30&amp;quot;, col = &amp;quot;gray30&amp;quot;) +
+   geom_point(data = network_data %&amp;gt;%
+                 group_by(end_lon,end_lat) %&amp;gt;%
+                 summarize(fishing_days = sum(fishing_days)),
+               aes(end_lon, end_lat, size = fishing_days), col = &amp;quot;orange&amp;quot;, shape = 21, stroke = 1.5)+
+   geom_path(data = paths,
+             aes(X, Y, group = interaction(line_id,subline_id), 
+                 col = normalized_distance , alpha = fishing_hours),  show.legend = NA) +
+   scale_size_continuous(range = c(0.5,10), breaks = c(1000, 5000, 10000, 20000, 30000), labels = comma) +
+   scale_alpha_continuous(range = c(0.3,1))+
+   scale_color_gradient2(low = &amp;quot;#0571b0&amp;quot;, mid = &amp;quot;#0571b0&amp;quot;, midpoint = .5, high = &amp;quot;#b2182b&amp;quot;)+
+   theme_minimal()+
+   theme(legend.position = c(0.2,0), 
+         legend.direction = &amp;quot;horizontal&amp;quot;,
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         panel.background = element_rect(fill = &amp;quot;white&amp;quot;,
+                                 colour = &amp;quot;white&amp;quot;),
+         axis.title = element_blank(),
+         axis.text = element_blank(),
+         axis.ticks = element_blank(),
+         plot.margin = margin(0, 0, 0, 0, &amp;quot;cm&amp;quot;),
+         plot.caption = element_text(colour = &amp;quot;gray&amp;quot;, face = &amp;quot;bold&amp;quot;, size = 12, vjust = 9),
+         plot.title = element_text(face = &amp;quot;bold&amp;quot;, size = 14)) +
+   guides(colour =  FALSE,
+          alpha = F,
+          size = guide_legend(title.position = &amp;quot;bottom&amp;quot;,title = &amp;quot;Fishing days&amp;quot;, title.hjust = 0.5))+
+   scale_y_continuous(expand = c(.1,0)) + 
+   scale_x_continuous(expand = c(.01,0.01))+
+   labs(title = &amp;quot;Global Network of Transnational Fisheries&amp;quot;,
+        caption = &amp;quot;Line color indicates the source (blue) and sink (red) of fishing effort. \n
+        Line transparency is proportional to fishing effort.\n
+        Circle size is proportional to the total foreign fishing effort in each EEZ. \n
+        Data from Global Fishing Watch (2013-2016).&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-15-mapping-the-global-network-of-transnational-fisheries_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;1440&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>test</title>
-      <link>/post/test/</link>
-      <pubDate>Thu, 15 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/test/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -217,18 +507,6 @@ library(zeallot)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;An important component of our work is to provide governments, not only with the ecological arguments to protect a special place, but also with the economic challenges and opportunities of creating a marine reserve. Usually, fisheries represent the most important challenge to overcome because reserves may directly displace their activities and affect the economic returns in the short-run. Therefore, having a good understanding of the distribution and intensity of fishing activities within a region of conservation priority is critical to assess the costs and trade-offs of designating a no-take marine reserve.&lt;/p&gt;
 
 &lt;p&gt;Traditionally, however, information of fishing grounds, effort, and catches is rarely available and it is heavily guarded by the fishing industry; making the decision making process nontransparent. Now, Global Fishing Watch is allowing us to bring transparent data to the negotiating table and to objectively assess the potential impacts of a marine reserve on the fishing industry. This has been critical to advance the implementation of marine reserves in many of our recent expeditions, including: &lt;a href=&#34;https://www.nationalgeographic.org/expeditions/clipperton-atoll/&#34; target=&#34;_blank&#34;&gt;Clipperton Atoll Marine Protected Area&lt;/a&gt; (France), &lt;a href=&#34;https://www.nationalgeographic.org/expeditions/niue/&#34; target=&#34;_blank&#34;&gt;Niue Marine Protected Area&lt;/a&gt;, Revillagigedo National Park (Mexico), &lt;a href=&#34;https://www.nationalgeographic.org/expeditions/juan-fernandez-archipelago/&#34; target=&#34;_blank&#34;&gt;Juan Fernández Marine Park&lt;/a&gt;(Chile), and &lt;a href=&#34;https://www.nationalgeographic.org/expeditions/cape-horn/&#34; target=&#34;_blank&#34;&gt;Cape Horn - Diego Ramirez Marine Park&lt;/a&gt;  (Chile).&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Global Network of Transboundary Fisheries</title>
-      <link>/post/2015-07-23-r-rmarkdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/post/2015-07-23-r-rmarkdown/</guid>
-      <description>&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;R Markdown&lt;/h1&gt;
-&lt;/div&gt;
 </description>
     </item>
     
