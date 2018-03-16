@@ -5,6 +5,10 @@ date: '2018-03-15'
 slug: mapping-the-global-network-of-transnational-fisheries
 categories: []
 tags: []
+output: 
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: vignette
 ---
 
 
@@ -113,4 +117,17 @@ library(zeallot)</code></pre>
 </tr>
 </tbody>
 </table>
+<p>where:</p>
+<ul>
+<li><code>flag</code>: Flag state of the fishing fleet.</li>
+<li><code>eez</code>: Exclusive Economic Zone of the country of territory being fished.</li>
+<li><code>fishing_vessels</code>: Total number of fishing vessels active inside the eez.</li>
+<li><code>fishing_days</code>: Total number of fishing days inside the eez.</li>
+<li><code>fishing_hours</code>: Total number of fishing hours inside the eez.</li>
+<li><code>fishing_kWh</code>: Total number of energy spent fishing inside the eez.</li>
+<li><code>start_lat</code>, <code>end_lat</code>: Spatial coordinates of the centroid of the EEZ of the fishing flag state, with some exceptions.</li>
+<li><code>start_lon</code>, <code>end_lon</code>: Spatial coordinates of the centroid of the EEZ, with some exceptions.</li>
+</ul>
+<p>We have excluded here 1) the connections between EU members states 2) the EU Northern agreements with Norway, and Iceland, 3) connections between sovereign states, e,g: France and Reunion and 4) disputed or jointly managed marine territories.</p>
+<p><strong>CAVEAT:</strong> The coordinates here do not refer to the actual port, or coastline from where vessels are fishing from or fishing in. These are merely for national-level visualization purposes.</p>
 </div>

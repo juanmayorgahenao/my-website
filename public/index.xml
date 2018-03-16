@@ -120,6 +120,19 @@ library(zeallot)&lt;/code&gt;&lt;/pre&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;p&gt;where:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;flag&lt;/code&gt;: Flag state of the fishing fleet.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;eez&lt;/code&gt;: Exclusive Economic Zone of the country of territory being fished.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fishing_vessels&lt;/code&gt;: Total number of fishing vessels active inside the eez.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fishing_days&lt;/code&gt;: Total number of fishing days inside the eez.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fishing_hours&lt;/code&gt;: Total number of fishing hours inside the eez.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fishing_kWh&lt;/code&gt;: Total number of energy spent fishing inside the eez.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;start_lat&lt;/code&gt;, &lt;code&gt;end_lat&lt;/code&gt;: Spatial coordinates of the centroid of the EEZ of the fishing flag state, with some exceptions.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;start_lon&lt;/code&gt;, &lt;code&gt;end_lon&lt;/code&gt;: Spatial coordinates of the centroid of the EEZ, with some exceptions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We have excluded here 1) the connections between EU members states 2) the EU Northern agreements with Norway, and Iceland, 3) connections between sovereign states, e,g: France and Reunion and 4) disputed or jointly managed marine territories.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CAVEAT:&lt;/strong&gt; The coordinates here do not refer to the actual port, or coastline from where vessels are fishing from or fishing in. These are merely for national-level visualization purposes.&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
