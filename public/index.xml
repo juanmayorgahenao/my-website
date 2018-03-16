@@ -685,6 +685,7 @@ c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.
   sf::st_set_geometry(NULL) %&amp;gt;% 
   unnest() %&amp;gt;% 
   mutate_at(vars(X,Y), round,2)&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; &#34;&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -867,6 +868,7 @@ Croatia
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;/div&gt;
 &lt;p&gt;To calculate the distance traveled, we use the Haversine method, implemented in the function &lt;code&gt;distHaversine()&lt;/code&gt; from the &lt;code&gt;geosphere&lt;/code&gt; package. We wrap that function and then map it along our data using the &lt;code&gt;pmap()&lt;/code&gt; function. Finally we re-scale the distance from [0,1] for each path.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;estimate_distance_traveled &amp;lt;- function(start_lon, start_lat, current_lon, current_lat){
   
@@ -882,6 +884,7 @@ paths &amp;lt;- paths %&amp;gt;%
   group_by(line_id) %&amp;gt;% 
   mutate(normalized_distance = round(distance/max(distance),2)) %&amp;gt;% 
   ungroup()&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; &#34;&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -1088,6 +1091,7 @@ Croatia
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;final-plotting&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Final plotting&lt;/h2&gt;

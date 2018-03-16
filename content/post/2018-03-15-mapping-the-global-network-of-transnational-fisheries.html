@@ -682,6 +682,7 @@ c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.
   sf::st_set_geometry(NULL) %&gt;% 
   unnest() %&gt;% 
   mutate_at(vars(X,Y), round,2)</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -864,6 +865,7 @@ Croatia
 </tr>
 </tbody>
 </table>
+</div>
 <p>To calculate the distance traveled, we use the Haversine method, implemented in the function <code>distHaversine()</code> from the <code>geosphere</code> package. We wrap that function and then map it along our data using the <code>pmap()</code> function. Finally we re-scale the distance from [0,1] for each path.</p>
 <pre class="r"><code>estimate_distance_traveled &lt;- function(start_lon, start_lat, current_lon, current_lat){
   
@@ -879,6 +881,7 @@ paths &lt;- paths %&gt;%
   group_by(line_id) %&gt;% 
   mutate(normalized_distance = round(distance/max(distance),2)) %&gt;% 
   ungroup()</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1085,6 +1088,7 @@ Croatia
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 <div id="final-plotting" class="section level2">
 <h2>Final plotting</h2>
