@@ -225,7 +225,8 @@ paths <- network_data_sf %>%
 paths %>% 
   head(3) %>% 
   knitr::kable('html') %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>% 
+  kableExtra::scroll_box(width = "100%")
 ```
 
 To calculate the distance traveled, we use the Haversine method, implemented in the function `distHaversine()` from the `geosphere` package. We wrap that function and then map it along our data using the `pmap()` function. Finally we re-scale the distance from [0,1] for each path.
@@ -251,7 +252,8 @@ paths <- paths %>%
 paths %>% 
   head(3) %>% 
   knitr::kable('html') %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>% 
+  kableExtra::scroll_box(width = "100%")
 ```
 
 ## Final plotting
