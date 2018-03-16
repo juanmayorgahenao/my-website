@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.37.1" />
+  <meta name="author" content="Juan S. Mayorga">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: “Tracking the global footprint of fisheries” introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where?">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/network_plot/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-114591721-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Juan S. Mayorga">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Juan S. Mayorga">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/network_plot/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@https://twitter.com/juansmayorga">
+  <meta property="twitter:creator" content="@https://twitter.com/juansmayorga">
+  
+  <meta property="og:site_name" content="Juan S. Mayorga">
+  <meta property="og:url" content="/post/network_plot/">
+  <meta property="og:title" content="Mapping the Global Network of Transnational Fisheries using R and the `sf` package | Juan S. Mayorga">
+  <meta property="og:description" content="Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: “Tracking the global footprint of fisheries” introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where?">
+  <meta property="og:locale" content="en-us">
+  
+  
+  
+  
+
+  
+
+  <title>Mapping the Global Network of Transnational Fisheries using R and the `sf` package | Juan S. Mayorga</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Juan S. Mayorga</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications_selected">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+            
+          
+        
+
+        <li class="nav-item">
+          <a href="http://juanmayorga.portfoliobox.net/" target="_blank" rel="noopener">
+            
+            <span>Photography</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <h1 itemprop="name">Mapping the Global Network of Transnational Fisheries using R and the `sf` package</h1>
+
+    
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="0001-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished dateModified">
+      Jan 1, 0001
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Juan S. Mayorga">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    10 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Mapping%20the%20Global%20Network%20of%20Transnational%20Fisheries%20using%20R%20and%20the%20%60sf%60%20package&amp;url=%2fpost%2fnetwork_plot%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2fnetwork_plot%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fnetwork_plot%2f&amp;title=Mapping%20the%20Global%20Network%20of%20Transnational%20Fisheries%20using%20R%20and%20the%20%60sf%60%20package"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2fnetwork_plot%2f&amp;title=Mapping%20the%20Global%20Network%20of%20Transnational%20Fisheries%20using%20R%20and%20the%20%60sf%60%20package"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Mapping%20the%20Global%20Network%20of%20Transnational%20Fisheries%20using%20R%20and%20the%20%60sf%60%20package&amp;body=%2fpost%2fnetwork_plot%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+    <div class="article-style" itemprop="articleBody">
+      <p>Global Fishing Watch has opened the doors to a new era of transparency and accountability in industrial fisheries. Our recent paper in Science: <a href="http://science.sciencemag.org/content/359/6378/904">“Tracking the global footprint of fisheries”</a> introduced this database to the scientific community and highlighted some of the potential research and management applications. One of these is to examine the global network of transnational fisheries (i.e., countries that fish in Exclusive Economic Zone’s (EEZ) of other countries) and ask: who fishes where? which countries fish the most in foreign waters? which EEZ’s are most heavily fished by foreign nations? what spatial patterns emerge from visualizing the inter-connectedness of transnational fisheries?</p>
+<p>In this blog post, I’ll walk through how we used Global Fishing Watch data to make an interactive visualization of this network which is introduced in our recent publication: <a href="http://dx.doi.org/10.1038/s41559-018-0499-1">“Rapid and lasting gains from solving illegal fishing”</a> published in the journal Nature Ecology &amp; Evolution.</p>
+<p>All the analysis is done in R, with Studio, using the following packages:</p>
+<pre class="r"><code>library(maps)
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(scales)
+library(zeallot)</code></pre>
+<div id="the-dataset" class="section level2">
+<h2>The dataset</h2>
+<p>Global Fishing Watch data has been made available for free <a href="https://globalfishingwatch.force.com/gfw/s/data_download">here</a>. This includes daily data of fishing effort by vessel at 0.1º resolution, and data of vessel characteristics including flag state, gear type, length, and others.</p>
+<p>The first step is to summarize fishing effort by flag state and Exclusive Economic Zone. For that, we can use the EEZ shapefile provided by <a href="http://marineregions.org/">Marine Regions</a> and spatially join it with the summarized 0.1º resolution fishing effort data. In this blog post I will skip this step - it will be a separate post soon - and instead focus on making the visualization.</p>
+<p>Here is snippet of the dataset:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Italy</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">33</td>
+<td align="right">28767</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">12.93</td>
+<td align="right">39.66</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Libya</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">37</td>
+<td align="right">32158</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">18.50</td>
+<td align="right">33.14</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Malta</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">103</td>
+<td align="right">88729</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.11</td>
+<td align="right">35.31</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Montenegro</td>
+<td align="right">3</td>
+<td align="right">77</td>
+<td align="right">1083</td>
+<td align="right">313512</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">18.68</td>
+<td align="right">41.87</td>
+</tr>
+<tr class="even">
+<td align="left">Algeria</td>
+<td align="left">Italy</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="right">116</td>
+<td align="right">42833</td>
+<td align="right">3.54</td>
+<td align="right">37.20</td>
+<td align="right">12.93</td>
+<td align="right">39.66</td>
+</tr>
+</tbody>
+</table>
+<p>where:</p>
+<ul>
+<li><code>flag</code>: Flag state of the fishing fleet.</li>
+<li><code>eez</code>: Exclusive Economic Zone of the country of territory being fished.</li>
+<li><code>fishing_vessels</code>: Total number of fishing vessels active inside the eez.</li>
+<li><code>fishing_days</code>: Total number of fishing days inside the eez.</li>
+<li><code>fishing_hours</code>: Total number of fishing hours inside the eez.</li>
+<li><code>fishing_kWh</code>: Total number of energy spent fishing inside the eez.</li>
+<li><code>start_lat</code>, <code>end_lat</code>: Spatial coordinates of the centroid of the EEZ of the fishing flag state, with some exceptions.</li>
+<li><code>start_lon</code>, <code>end_lon</code>: Spatial coordinates of the centroid of the EEZ, with some exceptions.</li>
+</ul>
+<p>We have excluded here 1) the connections between EU members states 2) the EU Northern agreements with Norway, and Iceland, 3) connections between sovereign states, e,g: France and Reunion and 4) disputed or jointly managed marine territories.</p>
+<p><strong>CAVEAT:</strong> The coordinates here do not refer to the actual port, or coastline from where vessels are fishing from or fishing in. These are merely for national-level visualization purposes.</p>
+</div>
+<div id="making-the-dataset-spatial" class="section level2">
+<h2>Making the dataset spatial</h2>
+<p>After importing the data, we need to convert it to a <strong>simple features dataframe</strong>, where each row corresponds to a line that connects the start and end points or - in our case - the flag state and the EEZ. For that we will use handy functions from the <code>sf</code> and <code>purrr</code> packages. If you are new to both these packages, two great tutorials are this <a href="https://jennybc.github.io/purrr-tutorial/">purrr tutorial</a> by Jenny Brian and <a href="https://edzer.github.io/UseR2017/">Spatial Data in R: New Directions</a> by Edzer Pebesma. Parts of this blog post are borrowed from the post <a href="http://www.visibledata.co.uk/blog/2018/02/28/2018-02-28_great-circles-with-sf-and-leaflet/">Great circles with sf and leaflet</a> by Martin John Hadley.</p>
+<p>First, lets create a <code>LINESTRING</code> simple feature for each row of our dataframe and create a simple features dataframe of our data. <code>LINESTRING</code>s are one-dimensional geometries the contain a “sequence of points connected by straight, non-self intersecting line pieces”. We can create them by making matrices of our start and end coordinates and then mapping the <code>st_linestring()</code> function across them. We also need to set the coordinate reference system to WGS84 as we are using lat/long coordinates.</p>
+<pre class="r"><code>network_data_sf &lt;- network_data %&gt;%
+  select(start_lon, start_lat, end_lon, end_lat) %&gt;% 
+  purrr::transpose() %&gt;% 
+  purrr::map(~ matrix(flatten_dbl(.), nrow = 2, byrow = TRUE)) %&gt;% 
+  purrr::map(st_linestring) %&gt;%
+  st_sfc(crs = 4326) %&gt;%
+  st_sf(geometry = .)%&gt;%
+  bind_cols(network_data) %&gt;%
+  select(everything(), geometry)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+<th align="left">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="left">c(19.11, 15.65, 40.93, 43.43)</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Italy</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">33</td>
+<td align="right">28767</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">12.93</td>
+<td align="right">39.66</td>
+<td align="left">c(19.11, 12.93, 40.93, 39.66)</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Libya</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">37</td>
+<td align="right">32158</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">18.50</td>
+<td align="right">33.14</td>
+<td align="left">c(19.11, 18.5, 40.93, 33.14)</td>
+</tr>
+</tbody>
+</table>
+<p>We now have a special class of dataframe (a <a href="http://tibble.tidyverse.org/">tibble</a> to be precise) with a list-column that contains the geometry features we just created (i.e.,one <code>LINESTRING</code> per row). Lets use the function <code>geom_sf()</code> from the <code>ggplot2</code> package to take a look at one line connecting Vanuatu to Chile:</p>
+<pre class="r"><code>world_map &lt;- rnaturalearth::ne_countries(scale = &#39;small&#39;, returnclass = c(&quot;sf&quot;))
+
+network_data_sf %&gt;% 
+  filter(eez == &quot;Chile&quot;, flag == &quot;Vanuatu&quot;) %&gt;% 
+  ggplot() +
+  borders()+
+  geom_sf(col = &quot;blue&quot;)+
+  borders()+
+  theme_minimal()+
+  coord_sf(datum = NA)</code></pre>
+<p><img src="/post/network_plot_files/figure-html/unnamed-chunk-5-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="making-great-circles-work" class="section level2">
+<h2>Making Great Circles Work</h2>
+<p>The next step is to divide our <code>LINESTRING</code> - which currently has only two points - into multiple smaller segments along the corresponding great circle path. These great circles are what you often seen on airline magazines and represent the shortest path between two points on the surface of a sphere. The <code>sf</code> package has a handy function called <code>st_segmentize()</code> that does this and we can specify the length of each segment.</p>
+<pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
+  st_segmentize(units::set_units(100, km)) </code></pre>
+<p><img src="/post/network_plot_files/figure-html/unnamed-chunk-7-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>Oh no! While <code>st_segmentize()</code> worked and produced the correct path of the great circle, the function does not care about the dateline. In the future, this will be addressed in the <code>sf</code> package, but in the meantime we can manually re-scale our longitudes to [-180,180], which gives us:</p>
+<pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
+  mutate(geometry = (geometry + c(180,90)) %% c(360) - c(180,90))</code></pre>
+<p><img src="/post/network_plot_files/figure-html/unnamed-chunk-9-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>So close!! Our line does not know that it needs to break at the dateline. So, for this we wrap our <code>LINESTRING</code> around the dateline using the aptly named <code>st_wrap_dateline()</code> function. A side effect of the <code>st_wrap_dateline()</code> is that our geometry type is no longer <code>LINESTRING</code> but <code>GEOMETRY</code>. This is because each simple feature that crosses the dateline is split into two becoming a <code>MULTILINESTRING</code>. When we combine more than one type of single simple feature in a collection (e.g, <code>MULTILINESTRING</code> and <code>LINESTRING</code>), the overall geometry type becomes <code>GEOMETRY</code>.</p>
+<pre class="r"><code>network_data_sf &lt;- network_data_sf %&gt;% 
+  st_wrap_dateline(options = c(&quot;WRAPDATELINE=YES&quot;,  &quot;DATELINEOFFSET=180&quot;), quiet = TRUE) %&gt;% 
+  sf::st_sf(crs = 4326)</code></pre>
+<p><img src="/post/network_plot_files/figure-html/unnamed-chunk-11-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="visualizing-directionality" class="section level2">
+<h2>Visualizing directionality</h2>
+<p>We now have our paths right, however, we still need to visualize the directionality. Where does a path start and end?. A common idea is to add arrows to the lines, but, since we will be plotting many many lines on the same graph this will not be optimal. My solution to this is to use a blue-red color gradient to represent the cumulative distance traveled from the starting point. This way we will have the starting points - representing sources of fishing effort - represented in blue, and end point - sinks of foreign fishing effort - represented in red. This will allow us to visualize patterns and hotspots more readily.</p>
+<p>So, how do we do this? First, we need to unpack the <code>LINESTRING</code>s into their coordinates, while keeping track of the line ID’s. Second, we calculate the distance traveled between the starting point and each position along the paths and 3) we use the color gradient to represent the distance traveled. Ready, set, go.</p>
+<p>We can use the <code>st_coordinates()</code> function to unpack the coordinates of each feature but first we need to change the type of our simple feature dataframe from <code>GEOMETRY</code> to <code>MULTILINESTRING</code> using the <code>st_cast()</code> function.</p>
+<pre class="r"><code>st_coordinates(st_cast(network_data_sf,&quot;MULTILINESTRING&quot;)$geometry) %&gt;% 
+  as_data_frame() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">X</th>
+<th align="right">Y</th>
+<th align="right">L1</th>
+<th align="right">L2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">19.11000</td>
+<td align="right">40.93000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">18.27039</td>
+<td align="right">41.56461</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">17.41421</td>
+<td align="right">42.19299</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">16.54093</td>
+<td align="right">42.81488</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">15.65000</td>
+<td align="right">43.43000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">19.11000</td>
+<td align="right">40.93000</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+<p>The resulting dataframe contains all the coordinates of each line and the corresponding line IDs. L2 is the main path (e.g., Vanuatu to Chile), and L1 is the ID of the resulting sublines when a line crosses the dateline. We can then nest our dataframe by line id and assign this to our data frame using the clever <code>%&lt;-%</code> operator from the <code>zeallot</code> <a href="https://www.rstudio.com/resources/videos/an-assignment-operator-to-unpack-vectors-and-lists/">package.</a></p>
+<pre class="r"><code>c(network_data_sf$line_id, network_data_sf$coords) %&lt;-% (
+  st_coordinates(st_cast(network_data_sf,&quot;MULTILINESTRING&quot;)$geometry) %&gt;% 
+  as_data_frame() %&gt;% 
+  rename(subline_id = L1) %&gt;%   
+  nest(-L2)
+  )</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+<th align="right">line_id</th>
+<th align="left">coords</th>
+<th align="left">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="left">list(X = c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65), Y = c(40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43), subline_id = c(1, 1, 1, 1, 1))</td>
+<td align="left">c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43)</td>
+</tr>
+</tbody>
+</table>
+<p>Now, that we have our tibble with a list-column containing all coordinates for each path, we need to calculate the cumulative distances for each point and use a color gradient to represent them. To my knowledge, the easiest way to this requires us to leave the <code>sf</code> package. To do this, we get rid of the geometry list-column of our tibble and unnest it. This produces a very long tibble where each row represent a point is great circle path between two locations.</p>
+<pre class="r"><code>paths &lt;- network_data_sf %&gt;% 
+  sf::st_set_geometry(NULL) %&gt;% 
+  unnest() %&gt;% 
+  mutate_at(vars(X,Y), round,2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+<th align="right">line_id</th>
+<th align="right">X</th>
+<th align="right">Y</th>
+<th align="right">subline_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">18.27</td>
+<td align="right">41.56</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">17.41</td>
+<td align="right">42.19</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>To calculate the distance traveled, we use the Haversine method, implemented in the function <code>distHaversine()</code> from the <code>geosphere</code> package. We wrap that function and then map it along our data using the <code>pmap()</code> function. Finally we re-scale the distance from [0,1] for each path.</p>
+<pre class="r"><code>estimate_distance_traveled &lt;- function(start_lon, start_lat, current_lon, current_lat){
+  
+  start_coords &lt;- c(start_lon, start_lat)
+  current_coords &lt;- c(current_lon, current_lat)
+  
+  geosphere::distHaversine(current_coords,start_coords)
+  
+}
+
+paths &lt;- paths %&gt;% 
+  mutate(distance = purrr::pmap_dbl(list(start_lon, start_lat, X, Y), estimate_distance_traveled)) %&gt;% 
+  group_by(line_id) %&gt;% 
+  mutate(normalized_distance = round(distance/max(distance),2)) %&gt;% 
+  ungroup()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">flag</th>
+<th align="left">eez</th>
+<th align="right">fishing_vessels</th>
+<th align="right">fishing_days</th>
+<th align="right">fishing_hours</th>
+<th align="right">fishing_kWh</th>
+<th align="right">start_lon</th>
+<th align="right">start_lat</th>
+<th align="right">end_lon</th>
+<th align="right">end_lat</th>
+<th align="right">line_id</th>
+<th align="right">X</th>
+<th align="right">Y</th>
+<th align="right">subline_id</th>
+<th align="right">distance</th>
+<th align="right">normalized_distance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">1</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">18.27</td>
+<td align="right">41.56</td>
+<td align="right">1</td>
+<td align="right">99305.12</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="odd">
+<td align="left">Albania</td>
+<td align="left">Croatia</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">9630</td>
+<td align="right">19.11</td>
+<td align="right">40.93</td>
+<td align="right">15.65</td>
+<td align="right">43.43</td>
+<td align="right">1</td>
+<td align="right">17.41</td>
+<td align="right">42.19</td>
+<td align="right">1</td>
+<td align="right">199303.11</td>
+<td align="right">0.50</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="final-plotting" class="section level2">
+<h2>Final plotting</h2>
+<p>We finally have our dataset ready, and using <code>ggplot</code> and a nice basemap of the world from <code>rnaturalearth</code> we can easily make our map of the Global Network of Transnational Fisheries!</p>
+<pre class="r"><code>(network_map &lt;- ggplot() +
+   geom_sf(data = world_map, size = .2, fill = &quot;gray30&quot;, col = &quot;gray30&quot;) +
+   geom_point(data = network_data %&gt;%
+                 group_by(end_lon,end_lat) %&gt;%
+                 summarize(fishing_days = sum(fishing_days)),
+               aes(end_lon, end_lat, size = fishing_days), col = &quot;orange&quot;, shape = 21, stroke = 1.5)+
+   geom_path(data = paths,
+             aes(X, Y, group = interaction(line_id,subline_id), 
+                 col = normalized_distance , alpha = fishing_hours),  show.legend = NA) +
+   scale_size_continuous(range = c(0.5,10), breaks = c(1000, 5000, 10000, 20000, 30000), labels = comma) +
+   scale_alpha_continuous(range = c(0.3,1))+
+   scale_color_gradient2(low = &quot;#0571b0&quot;, mid = &quot;#0571b0&quot;, midpoint = .5, high = &quot;#b2182b&quot;)+
+   theme_minimal()+
+   theme(legend.position = c(0.2,0), 
+         legend.direction = &quot;horizontal&quot;,
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         panel.background = element_rect(fill = &quot;white&quot;,
+                                 colour = &quot;white&quot;),
+         axis.title = element_blank(),
+         axis.text = element_blank(),
+         axis.ticks = element_blank(),
+         plot.margin = margin(0, 0, 0, 0, &quot;cm&quot;),
+         plot.caption = element_text(colour = &quot;gray&quot;, face = &quot;bold&quot;, size = 12, vjust = 9),
+         plot.title = element_text(face = &quot;bold&quot;, size = 14)) +
+   guides(colour =  FALSE,
+          alpha = F,
+          size = guide_legend(title.position = &quot;bottom&quot;,title = &quot;Fishing days&quot;, title.hjust = 0.5))+
+   scale_y_continuous(expand = c(.1,0)) + 
+   scale_x_continuous(expand = c(.01,0.01))+
+   labs(title = &quot;Global Network of Transnational Fisheries&quot;,
+        caption = &quot;Line color indicates the source (blue) and sink (red) of fishing effort. \n
+        Line transparency is proportional to fishing effort.\n
+        Circle size is proportional to the total foreign fishing effort in each EEZ. \n
+        Data from Global Fishing Watch (2013-2016).&quot;))</code></pre>
+<p><img src="/post/network_plot_files/figure-html/unnamed-chunk-20-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+
+    </div>
+
+    
+
+
+    
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+
+  </body>
+</html>
+
