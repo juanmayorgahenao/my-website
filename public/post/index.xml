@@ -13,15 +13,6 @@
     
     
     <item>
-      <title>Getting Global Fishing Watch from Google BigQuery using R</title>
-      <link>/post/getting-global-fishing-watch-from-google-bigquery-using-r/</link>
-      <pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/getting-global-fishing-watch-from-google-bigquery-using-r/</guid>
-      <description>This blog post explains a couple of workflows to connect to Big Query using R, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using R. If you are not, check out our Science publication Tracking the global footprint of fisheries as well as Global Fishing Watch Open Data portal.</description>
-    </item>
-    
-    <item>
       <title>Mapping the Global Network of Transnational Fisheries</title>
       <link>/post/mapping-the-global-network-of-transnational-fisheries/</link>
       <pubDate>Thu, 15 Mar 2018 00:00:00 +0000</pubDate>

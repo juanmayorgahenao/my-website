@@ -38,6 +38,7 @@ BQ_connection &lt;-  dbConnect(dbi_driver(),
                             billing = &quot;ng-gfw&quot;)</code></pre>
 <p>We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function <code>dbListTable()</code>. This will trigger a promp in your R session asking if you want to cache your credentials. Allow access and return to RStudio.</p>
 <pre class="r"><code>DBI::dbListTables(BQ_connection)</code></pre>
+<pre><code>## Auto-refreshing stale OAuth token.</code></pre>
 <pre><code>## [1] &quot;fishing_effort&quot;          &quot;fishing_effort_byvessel&quot;
 ## [3] &quot;fishing_vessels&quot;         &quot;vessels&quot;</code></pre>
 <p>Now we are all set to start querying and analysing Global Fishing Watch’s data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases</p>
