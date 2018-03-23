@@ -1,5 +1,5 @@
 ---
-title: Getting Global Fishing Watch from Google BigQuery using R
+title: Getting Global Fishing Watch Data from Google BigQuery using R
 author: Juan S. Mayorga
 date: '2018-03-16'
 slug: getting-global-fishing-watch-from-google-bigquery-using-r
@@ -33,7 +33,8 @@ Noow that you have a BigQuery-enabled project, go the [BigQuery's UI page](https
 
 The first step to use the data from R, is to set a connection with BigQuery. This is done using the `DBI` and `bigrquery` packages:
 
-```{r}
+```{r, message = F}
+library(tidyverse)
 library(DBI)
 library(bigrquery)
 
@@ -45,7 +46,7 @@ BQ_connection <-  dbConnect(dbi_driver(),
 
 We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function `dbListTable()`. This will trigger a promp in your R session asking if you want to cache your credentials. Allow access and return to RStudio.
 
-```{r}
+```{r message=F}
 DBI::dbListTables(BQ_connection)
 ```
 
@@ -56,7 +57,7 @@ Now we are all set to start querying and analysing Global Fishing Watch's data. 
   3. Make a map of fishing effort for a particular region of the ocean
 
 
-# 1. Summarize the number of vessels by flag state 
+# 1. Summarize the number of vessels by flag state and gear type
 
 This is possibly one the first and simplest queries to do. For this use case, we will use the `dbplyr` and `bigrquery` packages that allow us to avoid the need to write SQL. We just write the `dplyr` verbs and functions we all love, and the `dbplyr` package translates them into SQL in the backend. The main advantages of this approach is that it's very friendly and readable, and prevents us from the congnitive dissonance of switching between programming languages. However, SQL is a very large language and `dbplyr` does not do everything; it focuses on `SELECT` statements which are often what we use the most.   
 
@@ -94,25 +95,29 @@ As you will see, the object created in our environment is not the data we wanted
 summary_by_country_and_gear <- collect(summary_by_country_and_gear)
 ```
 
-By not assigning the queried data to an R object, this approach also allows us to make plots that query the data directly in the database. 
+We can the make a simple summarizing plot:
 
-```{r, message = FALSE}
-fishing_vessels %>% 
-  filter(active_2016) %>% 
-  group_by(flag, geartype) %>% 
-  summarize(n_vessels = n_distinct(mmsi),
-            total_GT = sum(tonnage)) %>% 
-  arrange(desc(n_vessels)) %>% 
-  head(10) %>% 
-  ggplot()+
-  geom_col(aes(x = flag, y = n_vessels, fill = geartype))+
-  theme_bw()+
+```{r}
+top_20_flags <- summary_by_country_and_gear %>% 
+  group_by(flag) %>% 
+  summarize(n_vessels = sum(n_vessels)) %>% 
+  top_n(20, n_vessels) %>% 
+  pull(flag)
+
+summary_by_country_and_gear %>% 
+  filter(flag %in% top_20_flags) %>% 
+  na.omit() %>% 
+  ggplot(aes(x = forcats::fct_reorder(flag, n_vessels), y = n_vessels, fill = geartype))+
+  geom_col()+
+  coord_flip()+
+  hrbrthemes::theme_ipsum()+
   ggsci::scale_fill_startrek()
 ```
 
+
 Chinese Trawlers are, by far, the largest fleet in the Global Fishing Watch Database.
 
-This approach is straigth forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don't work as expected and it will make it easier to reach out to the Global Fishing Watch community for help. A couple of great resources to learn are: [Learn SQL | Codecademy](https://www.codecademy.com/learn/learn-sql), and [Learn SQL the Hard Way](https://learncodethehardway.org/sql/). Another way to start learning SQL is to use the function `show_query()` from `dplyr`, whichwill show you what your R code is being translated as in SQL. 
+This approach is straigth forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don't work as expected and it will make it easier to reach out to the Global Fishing Watch team for help. A couple of great resources to learn are: [Learn SQL | Codecademy](https://www.codecademy.com/learn/learn-sql), and [Learn SQL the Hard Way](https://learncodethehardway.org/sql/). Another way to start learning SQL is to use the function `show_query()` from `dplyr`, which will show you what your R code gets translated as in SQL, behind scenes.
 
 ```{r, warning=FALSE}
 fishing_vessels %>% 
@@ -126,19 +131,18 @@ fishing_vessels %>%
 
 # 2. Make a time series of fishing effort for China's trawlers fleet
 
-For this analysis we need to summarize fishing by date for only Chinese trawlers from 2013-2016. 
+For this analysis we need to summarize fishing by date for only Chinese trawlers from 2013-2016. So, we need to join the effort and vessels charcteristics data and filter effort for Chinese trawlers only.
 
 
 ```{r, error = T}
 fishing_vessels <- dplyr::tbl(BQ_connection, "fishing_vessels")
-
 fishing_effort_byvessel <- dplyr::tbl(BQ_connection, "fishing_effort_byvessel")
 
 fishing_effort_byvessel %>% 
   inner_join(fishing_vessels %>% 
-               filter(flag == "CHN" ), by = "mmsi") %>% 
-  head()
+               filter(flag == "CHN" ), by = "mmsi") 
 ```
+
 
 
 
