@@ -16,18 +16,18 @@ This blog post explains a couple of workflows to connect to Big Query using `R`,
 
 # What is BigQuery
 
-[BigQuery](https://bigquery.cloud.google.com/welcome) is Google's platform to store and analyze massive datasets. It is very fast and well integrated to other Google products such as cloud storage, and it's free to use for up to 1TB of data anlyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries.
+[BigQuery](https://bigquery.cloud.google.com/welcome) is Google's platform to store and analyze massive datasets. It is very fast and well integrated to other Google products such as cloud storage, and it's free to use for up to 1TB of data analyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries.
 
 To start using BigQuery, you need to have a gmail account and a BigQuery-enabled project. If you don't have this yet, please follow the steps in this quickstart guide  [quickstart guide ](https://cloud.google.com/bigquery/quickstart-web-ui) and come back when done. 
 
 # Global Fishing Watch's data in BigQuery
 
-Noow that you have a BigQuery-enabled project, go the [BigQuery's UI page](https://bigquery.cloud.google.com). You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -> display project, and enter "global-fishing-watch" (without the quotes) on the Project ID. Click OK, and you should then have a `global-fishing-watch` project in your side bar. This project contains, two datasets: `"gfw_public_data"` and `"globa_footprint_of_fisheries"`. We will work on the latter, which contains the public data released with the *Science* publication. This dataset contains four tables 
+Now that you have a BigQuery-enabled project, go the [BigQuery's UI page](https://bigquery.cloud.google.com). You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -> display project, and enter "global-fishing-watch" (without the quotes) on the Project ID. Click OK, and you should then have a `global-fishing-watch` project in your side bar. This project contains, two datasets: `"gfw_public_data"` and `"globa_footprint_of_fisheries"`. We will work on the latter, which contains the public data released with the *Science* publication. This dataset contains four tables 
 
-  -  `fishing_effort`: Daily Fishing Effort and Vessel Presence at 100th Degree Resolution by Flag State and GearType, 2012-2016
+  -  `fishing_effort`: Daily Fishing Effort and Vessel Presence at 100th Degree Resolution by Flag State and Gear Type, 2012-2016
   -  `fishing_effort_byvessel`:Daily Fishing Effort at 10th Degree Resolution by MMSI, 2012-2016
   -  `fishing_vessels`: Characteristics of each vessel included in the effort data
-  -  `vessels`: This table includes all vessels that were matched to a regsitry, were identified through manual review or web searchers, or were classified by the neural network.
+  -  `vessels`: This table includes all vessels that were matched to a registry, were identified through manual review or web searchers, or were classified by the neural network.
 
 # Establishing a connection
 
@@ -38,19 +38,19 @@ library(tidyverse)
 library(DBI)
 library(bigrquery)
 
-BQ_connection <-  dbConnect(dbi_driver(), 
+BQ_connection <-  dbConnect(bigquery(), 
                             project = 'global-fishing-watch',
                             dataset = "global_footprint_of_fisheries", 
-                            billing = "ng-gfw")
+                            billing = "ng-gfw") # your billing account name
 ```
 
-We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function `dbListTable()`. This will trigger a promp in your R session asking if you want to cache your credentials. Allow access and return to RStudio.
+We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function `dbListTable()`. This will trigger a prompt in your R session asking if you want to cache your credentials. Allow access and return to RStudio.
 
 ```{r message=F}
 DBI::dbListTables(BQ_connection)
 ```
 
-Now we are all set to start querying and analysing Global Fishing Watch's data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases
+Now we are all set to start querying and analyzing Global Fishing Watch's data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases
 
   1. Summarize the number of vessels by flag state in 2016
   2. Make a time series of fishing effort for China's trawlers fleet
@@ -59,7 +59,7 @@ Now we are all set to start querying and analysing Global Fishing Watch's data. 
 
 # 1. Summarize the number of vessels by flag state and gear type
 
-This is possibly one the first and simplest queries to do. For this use case, we will use the `dbplyr` and `bigrquery` packages that allow us to avoid the need to write SQL. We just write the `dplyr` verbs and functions we all love, and the `dbplyr` package translates them into SQL in the backend. The main advantages of this approach is that it's very friendly and readable, and prevents us from the congnitive dissonance of switching between programming languages. However, SQL is a very large language and `dbplyr` does not do everything; it focuses on `SELECT` statements which are often what we use the most.   
+This is possibly one the first and simplest queries to do. For this use case, we will use the `dbplyr` and `bigrquery` packages that allow us to avoid the need to write SQL. We just write the `dplyr` verbs and functions we all love, and the `dbplyr` package translates them into SQL in the back-end. The main advantages of this approach is that it's very friendly and readable, and prevents us from the cognitive dissonance of switching between programming languages. However, SQL is a very large language and `dbplyr` does not do everything; it focuses on `SELECT` statements which are often what we use the most.   
 
 The first step here is to connect to the table we want to query using the `tbl()` function:
 
@@ -117,7 +117,7 @@ summary_by_country_and_gear %>%
 
 Chinese Trawlers are, by far, the largest fleet in the Global Fishing Watch Database.
 
-This approach is straigth forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don't work as expected and it will make it easier to reach out to the Global Fishing Watch team for help. A couple of great resources to learn are: [Learn SQL | Codecademy](https://www.codecademy.com/learn/learn-sql), and [Learn SQL the Hard Way](https://learncodethehardway.org/sql/). Another way to start learning SQL is to use the function `show_query()` from `dplyr`, which will show you what your R code gets translated as in SQL, behind scenes.
+This approach is straight forward and works perfectly for simple queries. However, I recommend you become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don't work as expected and it will make it easier to reach out to the Global Fishing Watch community for help. A couple of great resources to learn are: [Learn SQL | Codecademy](https://www.codecademy.com/learn/learn-sql), and [Learn SQL the Hard Way](https://learncodethehardway.org/sql/). Another way to start learning SQL is to use the function `show_query()` from `dplyr`, which will show you what your R code gets translated as in SQL, behind scenes.
 
 ```{r, warning=FALSE}
 fishing_vessels %>% 
@@ -131,22 +131,97 @@ fishing_vessels %>%
 
 # 2. Make a time series of fishing effort for China's trawlers fleet
 
-For this analysis we need to summarize fishing by date for only Chinese trawlers from 2013-2016. So, we need to join the effort and vessels charcteristics data and filter effort for Chinese trawlers only.
+For this analysis we need to summarize fishing by date, only for Chinese trawlers between 2013-2016. So, we need to join the effort and vessels characteristics data and filter effort for Chinese trawlers only. An inner joing is the perfect operation for this. 
 
+Using the previous approach, we would write something like this:
 
 ```{r, error = T}
 fishing_vessels <- dplyr::tbl(BQ_connection, "fishing_vessels")
 fishing_effort_byvessel <- dplyr::tbl(BQ_connection, "fishing_effort_byvessel")
 
-fishing_effort_byvessel %>% 
+ts_china_effort <- fishing_effort_byvessel %>% 
   inner_join(fishing_vessels %>% 
-               filter(flag == "CHN" ), by = "mmsi") 
+               filter(flag == "CHN", geartype == "trawlers"), by = "mmsi") %>% 
+  group_by(date) %>% 
+  summarize(fishing_hours = sum(fishing_hours)) %>% 
+  ungroup() %>% 
+  arrange(date) %>% 
+  collect()
+
+head(ts_china_effort)
+```
+
+Until recently, joining datasets through `bigrquery` in this way was not possible. This has been implemented a couple weeks ago in the dev version of the `bigrquery` package, so make sure to install it for it to work. Still, some simple functions continue to be problematic and require some workarounds. For instance, the `date()` or `year()` functions -- both valid in SQL and R -- do not work as expected when querying data via `bigrquery` and dbplyr. 
+
+
+
+Now lets plot this data to observe the effect of the chinese new year and the summer fishing moratoria on the temporal patterns of fishing effort. 
+
+```{r}
+moratoria_dates <- tibble(year = c(2013:2016)) %>% 
+  mutate(start_date = lubridate::ymd(paste(year,"-06-01",sep = "")),
+         end_date = lubridate::ymd(paste(year,"-08-01",sep = "")))
+
+new_year_dates <- tibble(year = c(2013:2016),
+                         start_date = c(lubridate::ymd("2013-02-07"),
+                                        lubridate::ymd("2014-01-28"),
+                                        lubridate::ymd("2015-02-16"),
+                                        lubridate::ymd("2016-02-05")),
+                         end_date = c(lubridate::ymd("2013-02-13"),
+                                      lubridate::ymd("2014-02-3"),
+                                      lubridate::ymd("2015-02-22"),
+                                      lubridate::ymd("2016-02-11")))
 ```
 
 
 
+```{r}
+ggplot() +
+  geom_rect(data = moratoria_dates, 
+            aes(xmin = start_date, 
+                xmax = end_date,
+                ymin = 0,
+                ymax = Inf,
+                fill = "navyblue"),
+            alpha = 0.5, 
+            show.legend = TRUE) +
+  geom_rect(data = new_year_dates, 
+            aes(xmin = start_date, 
+                xmax = end_date,
+                ymin = 0,
+                ymax = Inf,
+                fill = "dodgerblue"),
+            alpha = 0.5,
+            show.legend = TRUE) +
+  geom_line(data = ts_china_effort %>% 
+               mutate(date = lubridate::ymd(date)) %>% 
+               filter(lubridate::year(date) > 2012),
+           aes(x = date, y = fishing_hours), 
+           size = 0.3)+
+  theme_minimal() +
+  theme(axis.ticks = element_line(size = 0.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title = element_text(size = 10),
+        legend.text = element_text(size = 6),
+        legend.justification = "center",
+        legend.position = "bottom",
+        plot.margin = margin(2,2,2,2)) + 
+  scale_x_date(date_breaks = "1 year", 
+               date_labels = "%Y ") +
+  xlab("") +
+  scale_y_continuous(expand = c(0, 0),
+                     labels = scales::comma) +
+  ylab("Fishing hours")+
+  scale_fill_manual(values = c("orange", "dodgerblue"),
+                    name = " ",
+                    labels = c("Chinese New Year", "Moratoria")) +
+  guides(colour = guide_legend(override.aes = list(alpha = .5)))
+```
 
-
-
-
+Conclusion: Holidays can have as large an effect as strictly enforced policies on fishing activity. Thus, we need more holidays!
 

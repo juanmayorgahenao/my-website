@@ -19,17 +19,17 @@
       <description>&lt;p&gt;This blog post explains a couple of workflows to connect to Big Query using &lt;code&gt;R&lt;/code&gt;, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using &lt;code&gt;R&lt;/code&gt;. If you are not, check out our Science publication &lt;a href=&#34;http://science.sciencemag.org/content/359/6378/904&#34;&gt;Tracking the global footprint of fisheries&lt;/a&gt; as well as &lt;a href=&#34;http://globalfishingwatch.io/&#34;&gt;Global Fishing Watch Open Data&lt;/a&gt; portal.&lt;/p&gt;
 &lt;div id=&#34;what-is-bigquery&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;What is BigQuery&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://bigquery.cloud.google.com/welcome&#34;&gt;BigQuery&lt;/a&gt; is Google’s platform to store and analyze massive datasets. It is very fast and well integrated to other Google products such as cloud storage, and it’s free to use for up to 1TB of data anlyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://bigquery.cloud.google.com/welcome&#34;&gt;BigQuery&lt;/a&gt; is Google’s platform to store and analyze massive datasets. It is very fast and well integrated to other Google products such as cloud storage, and it’s free to use for up to 1TB of data analyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries.&lt;/p&gt;
 &lt;p&gt;To start using BigQuery, you need to have a gmail account and a BigQuery-enabled project. If you don’t have this yet, please follow the steps in this quickstart guide &lt;a href=&#34;https://cloud.google.com/bigquery/quickstart-web-ui&#34;&gt;quickstart guide&lt;/a&gt; and come back when done.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;global-fishing-watchs-data-in-bigquery&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Global Fishing Watch’s data in BigQuery&lt;/h1&gt;
-&lt;p&gt;Noow that you have a BigQuery-enabled project, go the &lt;a href=&#34;https://bigquery.cloud.google.com&#34;&gt;BigQuery’s UI page&lt;/a&gt;. You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -&amp;gt; display project, and enter “global-fishing-watch” (without the quotes) on the Project ID. Click OK, and you should then have a &lt;code&gt;global-fishing-watch&lt;/code&gt; project in your side bar. This project contains, two datasets: &lt;code&gt;&amp;quot;gfw_public_data&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;globa_footprint_of_fisheries&amp;quot;&lt;/code&gt;. We will work on the latter, which contains the public data released with the &lt;em&gt;Science&lt;/em&gt; publication. This dataset contains four tables&lt;/p&gt;
+&lt;p&gt;Now that you have a BigQuery-enabled project, go the &lt;a href=&#34;https://bigquery.cloud.google.com&#34;&gt;BigQuery’s UI page&lt;/a&gt;. You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -&amp;gt; display project, and enter “global-fishing-watch” (without the quotes) on the Project ID. Click OK, and you should then have a &lt;code&gt;global-fishing-watch&lt;/code&gt; project in your side bar. This project contains, two datasets: &lt;code&gt;&amp;quot;gfw_public_data&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;globa_footprint_of_fisheries&amp;quot;&lt;/code&gt;. We will work on the latter, which contains the public data released with the &lt;em&gt;Science&lt;/em&gt; publication. This dataset contains four tables&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;fishing_effort&lt;/code&gt;: Daily Fishing Effort and Vessel Presence at 100th Degree Resolution by Flag State and GearType, 2012-2016&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fishing_effort&lt;/code&gt;: Daily Fishing Effort and Vessel Presence at 100th Degree Resolution by Flag State and Gear Type, 2012-2016&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;fishing_effort_byvessel&lt;/code&gt;:Daily Fishing Effort at 10th Degree Resolution by MMSI, 2012-2016&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;fishing_vessels&lt;/code&gt;: Characteristics of each vessel included in the effort data&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;vessels&lt;/code&gt;: This table includes all vessels that were matched to a regsitry, were identified through manual review or web searchers, or were classified by the neural network.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vessels&lt;/code&gt;: This table includes all vessels that were matched to a registry, were identified through manual review or web searchers, or were classified by the neural network.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;div id=&#34;establishing-a-connection&#34; class=&#34;section level1&#34;&gt;
@@ -43,11 +43,11 @@ BQ_connection &amp;lt;-  dbConnect(dbi_driver(),
                             project = &amp;#39;global-fishing-watch&amp;#39;,
                             dataset = &amp;quot;global_footprint_of_fisheries&amp;quot;, 
                             billing = &amp;quot;ng-gfw&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function &lt;code&gt;dbListTable()&lt;/code&gt;. This will trigger a promp in your R session asking if you want to cache your credentials. Allow access and return to RStudio.&lt;/p&gt;
+&lt;p&gt;We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function &lt;code&gt;dbListTable()&lt;/code&gt;. This will trigger a prompt in your R session asking if you want to cache your credentials. Allow access and return to RStudio.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;DBI::dbListTables(BQ_connection)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;fishing_effort&amp;quot;          &amp;quot;fishing_effort_byvessel&amp;quot;
 ## [3] &amp;quot;fishing_vessels&amp;quot;         &amp;quot;vessels&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now we are all set to start querying and analysing Global Fishing Watch’s data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases&lt;/p&gt;
+&lt;p&gt;Now we are all set to start querying and analyzing Global Fishing Watch’s data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases&lt;/p&gt;
 &lt;ol style=&#34;list-style-type: decimal&#34;&gt;
 &lt;li&gt;Summarize the number of vessels by flag state in 2016&lt;/li&gt;
 &lt;li&gt;Make a time series of fishing effort for China’s trawlers fleet&lt;/li&gt;
@@ -56,7 +56,7 @@ BQ_connection &amp;lt;-  dbConnect(dbi_driver(),
 &lt;/div&gt;
 &lt;div id=&#34;summarize-the-number-of-vessels-by-flag-state-and-gear-type&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;1. Summarize the number of vessels by flag state and gear type&lt;/h1&gt;
-&lt;p&gt;This is possibly one the first and simplest queries to do. For this use case, we will use the &lt;code&gt;dbplyr&lt;/code&gt; and &lt;code&gt;bigrquery&lt;/code&gt; packages that allow us to avoid the need to write SQL. We just write the &lt;code&gt;dplyr&lt;/code&gt; verbs and functions we all love, and the &lt;code&gt;dbplyr&lt;/code&gt; package translates them into SQL in the backend. The main advantages of this approach is that it’s very friendly and readable, and prevents us from the congnitive dissonance of switching between programming languages. However, SQL is a very large language and &lt;code&gt;dbplyr&lt;/code&gt; does not do everything; it focuses on &lt;code&gt;SELECT&lt;/code&gt; statements which are often what we use the most.&lt;/p&gt;
+&lt;p&gt;This is possibly one the first and simplest queries to do. For this use case, we will use the &lt;code&gt;dbplyr&lt;/code&gt; and &lt;code&gt;bigrquery&lt;/code&gt; packages that allow us to avoid the need to write SQL. We just write the &lt;code&gt;dplyr&lt;/code&gt; verbs and functions we all love, and the &lt;code&gt;dbplyr&lt;/code&gt; package translates them into SQL in the back-end. The main advantages of this approach is that it’s very friendly and readable, and prevents us from the cognitive dissonance of switching between programming languages. However, SQL is a very large language and &lt;code&gt;dbplyr&lt;/code&gt; does not do everything; it focuses on &lt;code&gt;SELECT&lt;/code&gt; statements which are often what we use the most.&lt;/p&gt;
 &lt;p&gt;The first step here is to connect to the table we want to query using the &lt;code&gt;tbl()&lt;/code&gt; function:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse) #loads dplyr and friends
 
@@ -108,7 +108,7 @@ summary_by_country_and_gear %&amp;gt;%
   ggsci::scale_fill_startrek()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;1344&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Chinese Trawlers are, by far, the largest fleet in the Global Fishing Watch Database.&lt;/p&gt;
-&lt;p&gt;This approach is straigth forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don’t work as expected and it will make it easier to reach out to the Global Fishing Watch team for help. A couple of great resources to learn are: &lt;a href=&#34;https://www.codecademy.com/learn/learn-sql&#34;&gt;Learn SQL | Codecademy&lt;/a&gt;, and &lt;a href=&#34;https://learncodethehardway.org/sql/&#34;&gt;Learn SQL the Hard Way&lt;/a&gt;. Another way to start learning SQL is to use the function &lt;code&gt;show_query()&lt;/code&gt; from &lt;code&gt;dplyr&lt;/code&gt;, which will show you what your R code gets translated as in SQL, behind scenes.&lt;/p&gt;
+&lt;p&gt;This approach is straight forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don’t work as expected and it will make it easier to reach out to the Global Fishing Watch community for help. A couple of great resources to learn are: &lt;a href=&#34;https://www.codecademy.com/learn/learn-sql&#34;&gt;Learn SQL | Codecademy&lt;/a&gt;, and &lt;a href=&#34;https://learncodethehardway.org/sql/&#34;&gt;Learn SQL the Hard Way&lt;/a&gt;. Another way to start learning SQL is to use the function &lt;code&gt;show_query()&lt;/code&gt; from &lt;code&gt;dplyr&lt;/code&gt;, which will show you what your R code gets translated as in SQL, behind scenes.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fishing_vessels %&amp;gt;% 
   filter(active_2016) %&amp;gt;% 
   group_by(flag, geartype) %&amp;gt;% 
@@ -117,22 +117,85 @@ summary_by_country_and_gear %&amp;gt;%
   arrange(desc(n_vessels)) %&amp;gt;% 
   show_query()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## &amp;lt;SQL&amp;gt;
-## SELECT [flag], [geartype], COUNT(DISTINCT [mmsi]) AS [n_vessels], SUM([tonnage]) AS [total_GT]
-## FROM [fishing_vessels]
-## WHERE ([active_2016])
-## GROUP BY [flag], [geartype]
-## ORDER BY [n_vessels] DESC&lt;/code&gt;&lt;/pre&gt;
+## SELECT `flag`, `geartype`, COUNT(DISTINCT `mmsi`) AS `n_vessels`, SUM(`tonnage`) AS `total_GT`
+## FROM `fishing_vessels`
+## WHERE (`active_2016`)
+## GROUP BY `flag`, `geartype`
+## ORDER BY `n_vessels` DESC&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;make-a-time-series-of-fishing-effort-for-chinas-trawlers-fleet&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;2. Make a time series of fishing effort for China’s trawlers fleet&lt;/h1&gt;
-&lt;p&gt;For this analysis we need to summarize fishing by date for only Chinese trawlers from 2013-2016. So, we need to join the effort and vessels charcteristics data and filter effort for Chinese trawlers only.&lt;/p&gt;
+&lt;p&gt;For this analysis we need to summarize fishing by date, only for Chinese trawlers between 2013-2016. So, we need to join the effort and vessels characteristics data and filter effort for Chinese trawlers only.&lt;/p&gt;
+&lt;p&gt;Using the previous approach, we would write something like this:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fishing_vessels &amp;lt;- dplyr::tbl(BQ_connection, &amp;quot;fishing_vessels&amp;quot;)
 fishing_effort_byvessel &amp;lt;- dplyr::tbl(BQ_connection, &amp;quot;fishing_effort_byvessel&amp;quot;)
 
-fishing_effort_byvessel %&amp;gt;% 
+ts_china_effort &amp;lt;- fishing_effort_byvessel %&amp;gt;% 
   inner_join(fishing_vessels %&amp;gt;% 
-               filter(flag == &amp;quot;CHN&amp;quot; ), by = &amp;quot;mmsi&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Error: Field &amp;#39;TBL_LEFT].[date&amp;#39; not found on either side of the JOIN&lt;/code&gt;&lt;/pre&gt;
+               filter(flag == &amp;quot;CHN&amp;quot;, geartype == &amp;quot;trawlers&amp;quot;), by = &amp;quot;mmsi&amp;quot;) %&amp;gt;% 
+  group_by(date) %&amp;gt;% 
+  summarize(fishing_hours = sum(fishing_hours)) %&amp;gt;% 
+  ungroup() %&amp;gt;% 
+  collect()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;moratoria_dates &amp;lt;- tibble(year = c(2013:2016)) %&amp;gt;% 
+  mutate(start_date = lubridate::ymd(paste(year,&amp;quot;-06-01&amp;quot;,sep = &amp;quot;&amp;quot;)),
+         end_date = lubridate::ymd(paste(year,&amp;quot;-08-01&amp;quot;,sep = &amp;quot;&amp;quot;)))
+
+new_year_dates &amp;lt;- tibble(year = c(2013:2016),
+                         start_date = c(lubridate::ymd(&amp;quot;2013-02-07&amp;quot;),
+                                        lubridate::ymd(&amp;quot;2014-01-28&amp;quot;),
+                                        lubridate::ymd(&amp;quot;2015-02-16&amp;quot;),
+                                        lubridate::ymd(&amp;quot;2016-02-05&amp;quot;)),
+                         end_date = c(lubridate::ymd(&amp;quot;2013-02-13&amp;quot;),
+                                      lubridate::ymd(&amp;quot;2014-02-3&amp;quot;),
+                                      lubridate::ymd(&amp;quot;2015-02-22&amp;quot;),
+                                      lubridate::ymd(&amp;quot;2016-02-11&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot() +
+  geom_rect(data = moratoria_dates, 
+            aes(xmin = start_date, 
+                xmax = end_date,
+                ymin = 0,
+                ymax = Inf,
+                fill = &amp;quot;navyblue&amp;quot;),
+            alpha = 0.5, 
+            show.legend = TRUE) +
+  geom_rect(data = new_year_dates, 
+            aes(xmin = start_date, 
+                xmax = end_date,
+                ymin = 0,
+                ymax = Inf,
+                fill = &amp;quot;dodgerblue&amp;quot;),
+            alpha = 0.5,
+            show.legend = TRUE) +
+  geom_line(data = ts_china_effort %&amp;gt;% 
+               mutate(date = lubridate::ymd(date)) %&amp;gt;% 
+               filter(lubridate::year(date) &amp;gt; 2012),
+           aes(x = date, y = fishing_hours), 
+           size = 0.3)+
+  theme_minimal() +
+  theme(axis.ticks = element_line(size = 0.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = &amp;quot;black&amp;quot;),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title = element_text(size = 10),
+        legend.justification = &amp;quot;top&amp;quot;,
+        legend.text = element_text(size = 6),
+        legend.position = c(1,1),
+        plot.margin = margin(2,2,2,2)) + 
+  scale_x_date(date_breaks = &amp;quot;1 year&amp;quot;, 
+               date_labels = &amp;quot;%Y &amp;quot;) +
+  xlab(&amp;quot;&amp;quot;) +
+  scale_y_continuous(expand = c(0, 0),
+                     labels = scales::comma) +
+  ylab(&amp;quot;Fishing hours&amp;quot;)+
+  scale_fill_manual(values = c(&amp;quot;orange&amp;quot;, &amp;quot;dodgerblue&amp;quot;),
+                    name = &amp;quot; &amp;quot;,
+                    labels = c(&amp;quot;Chinese New Year&amp;quot;, &amp;quot;Moratoria&amp;quot;)) +
+  guides(colour = guide_legend(override.aes = list(alpha = .5)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;1344&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
