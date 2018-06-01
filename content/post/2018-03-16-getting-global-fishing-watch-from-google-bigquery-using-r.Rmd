@@ -239,13 +239,11 @@ Notice that if you print the variable `full_sql` you can see the entire SQL quer
 full_sql
 ```
 
-Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then use the function `query_exec()` from the `bigrquery` library like this:
+Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then can use the function `dbGetQuery()` from the `DBI` library like:
 
 ```{r}
-china_trawlers_ts <- bigrquery::query_exec(full_sql, 
-                                           project = "ng-gfw", 
-                                           allowLargeResults = TRUE,
-                                           use_legacy_sql = FALSE)
+china_trawlers_ts <- dbGetQuery(BQ_connection, 
+                                full_sql)
 ```
 
 **You do not have to use the `glue` library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up**
