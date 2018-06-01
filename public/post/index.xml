@@ -18,7 +18,7 @@
       <pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/getting-global-fishing-watch-from-google-bigquery-using-r/</guid>
-      <description>This blog post explains a couple of workflows to connect to Big Query using R, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using R. If you are not, check out our Science publication Tracking the global footprint of fisheries as well as the Global Fishing Watch Open Data portal.</description>
+      <description>What is BigQuery Global Fishing Watch’s data in BigQuery Establishing a connection 1. Summarize the number of vessels by flag state and gear type 2. Make a time series of fishing effort for China’s trawlers fleet The dplyr way Why would I ever write SQL? The SQL way  3. Make a map of fishing effort for a particular region of the ocean Closing remarks   This blog post explains a couple of workflows to connect to Big Query using R, and access Global Fishing Watch’s public data.</description>
     </item>
     
     <item>

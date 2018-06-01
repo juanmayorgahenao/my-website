@@ -16,7 +16,23 @@
       <pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/getting-global-fishing-watch-from-google-bigquery-using-r/</guid>
-      <description>&lt;p&gt;This blog post explains a couple of workflows to connect to Big Query using &lt;code&gt;R&lt;/code&gt;, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using &lt;code&gt;R&lt;/code&gt;. If you are not, check out our Science publication &lt;a href=&#34;http://science.sciencemag.org/content/359/6378/904&#34;&gt;Tracking the global footprint of fisheries&lt;/a&gt; as well as the &lt;a href=&#34;http://globalfishingwatch.io/&#34;&gt;Global Fishing Watch Open Data&lt;/a&gt; portal.&lt;/p&gt;
+      <description>&lt;div id=&#34;TOC&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#what-is-bigquery&#34;&gt;What is BigQuery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#global-fishing-watchs-data-in-bigquery&#34;&gt;Global Fishing Watch’s data in BigQuery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#establishing-a-connection&#34;&gt;Establishing a connection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#summarize-the-number-of-vessels-by-flag-state-and-gear-type&#34;&gt;1. Summarize the number of vessels by flag state and gear type&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#make-a-time-series-of-fishing-effort-for-chinas-trawlers-fleet&#34;&gt;2. Make a time series of fishing effort for China’s trawlers fleet&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#the-dplyr-way&#34;&gt;The dplyr way&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#why-would-i-ever-write-sql&#34;&gt;Why would I ever write SQL?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#the-sql-way&#34;&gt;The SQL way&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#make-a-map-of-fishing-effort-for-a-particular-region-of-the-ocean&#34;&gt;3. Make a map of fishing effort for a particular region of the ocean&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#closing-remarks&#34;&gt;Closing remarks&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This blog post explains a couple of workflows to connect to Big Query using &lt;code&gt;R&lt;/code&gt;, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using &lt;code&gt;R&lt;/code&gt;. If you are not, check out our Science publication &lt;a href=&#34;http://science.sciencemag.org/content/359/6378/904&#34;&gt;Tracking the global footprint of fisheries&lt;/a&gt; as well as the &lt;a href=&#34;http://globalfishingwatch.io/&#34;&gt;Global Fishing Watch Open Data&lt;/a&gt; portal.&lt;/p&gt;
 &lt;div id=&#34;what-is-bigquery&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;What is BigQuery&lt;/h1&gt;
 &lt;p&gt;&lt;a href=&#34;https://bigquery.cloud.google.com/welcome&#34;&gt;BigQuery&lt;/a&gt; is Google’s platform to store and analyze large datasets. It is very fast and well integrated to other Google products such as cloud storage, and it’s free to use for up to 1TB of data analyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries. &lt;strong&gt;Big Query understands both Legacy and Standard SQL. Unfortunately, these languages are more different that you would expect, which makes things confusing. In this post I will use Standard SQL since Big Query is slowly migrating to only using this language in the future&lt;/strong&gt;&lt;/p&gt;
