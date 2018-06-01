@@ -256,12 +256,9 @@ chinese_vessels_sub_query &amp;lt;- glue::glue_sql(
 ## GROUP BY date
 ## ORDER BY date
 ## DESC&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then use the function &lt;code&gt;query_exec()&lt;/code&gt; from the &lt;code&gt;bigrquery&lt;/code&gt; library like this:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;china_trawlers_ts &amp;lt;- bigrquery::query_exec(full_sql, 
-                                           project = &amp;quot;ng-gfw&amp;quot;, 
-                                           allowLargeResults = TRUE,
-                                           use_legacy_sql = FALSE)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 0 bytes processed&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then can use the function &lt;code&gt;dbGetQuery()&lt;/code&gt; from the &lt;code&gt;DBI&lt;/code&gt; library like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;china_trawlers_ts &amp;lt;- dbGetQuery(BQ_connection, 
+                                full_sql)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;strong&gt;You do not have to use the &lt;code&gt;glue&lt;/code&gt; library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;The resulting object from this query is a dataframe of daily total fishing effort by Chinese trawlers, from 2013 onwards, arranged by date. Now lets plot the data to observe the effect of the Chinese new year and the summer fishing moratorium on China’s temporal patterns of fishing effort.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;moratoria_dates &amp;lt;- tibble(year = c(2013:2016)) %&amp;gt;% 

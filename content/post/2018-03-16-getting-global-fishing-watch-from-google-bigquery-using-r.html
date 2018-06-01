@@ -254,12 +254,9 @@ chinese_vessels_sub_query &lt;- glue::glue_sql(
 ## GROUP BY date
 ## ORDER BY date
 ## DESC</code></pre>
-<p>Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then use the function <code>query_exec()</code> from the <code>bigrquery</code> library like this:</p>
-<pre class="r"><code>china_trawlers_ts &lt;- bigrquery::query_exec(full_sql, 
-                                           project = &quot;ng-gfw&quot;, 
-                                           allowLargeResults = TRUE,
-                                           use_legacy_sql = FALSE)</code></pre>
-<pre><code>## 0 bytes processed</code></pre>
+<p>Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then can use the function <code>dbGetQuery()</code> from the <code>DBI</code> library like:</p>
+<pre class="r"><code>china_trawlers_ts &lt;- dbGetQuery(BQ_connection, 
+                                full_sql)</code></pre>
 <p><strong>You do not have to use the <code>glue</code> library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up</strong></p>
 <p>The resulting object from this query is a dataframe of daily total fishing effort by Chinese trawlers, from 2013 onwards, arranged by date. Now lets plot the data to observe the effect of the Chinese new year and the summer fishing moratorium on China’s temporal patterns of fishing effort.</p>
 <pre class="r"><code>moratoria_dates &lt;- tibble(year = c(2013:2016)) %&gt;% 
