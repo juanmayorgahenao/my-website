@@ -5,7 +5,7 @@ date: '2018-03-16'
 slug: getting-global-fishing-watch-from-google-bigquery-using-r
 categories: []
 tags: []
-draft: true
+draft: false
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE}
