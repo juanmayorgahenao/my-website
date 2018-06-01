@@ -1,5 +1,5 @@
 ---
-title: Getting Global Fishing Watch Data from Google BigQuery using R
+title: Getting Global Fishing Watch Data from Google Big Query using R
 author: Juan S. Mayorga
 date: '2018-03-16'
 slug: getting-global-fishing-watch-from-google-bigquery-using-r
@@ -10,15 +10,15 @@ draft: true
 
 
 
-<p>This blog post explains a couple of workflows to connect to Big Query using <code>R</code>, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using <code>R</code>. If you are not, check out our Science publication <a href="http://science.sciencemag.org/content/359/6378/904">Tracking the global footprint of fisheries</a> as well as <a href="http://globalfishingwatch.io/">Global Fishing Watch Open Data</a> portal.</p>
+<p>This blog post explains a couple of workflows to connect to Big Query using <code>R</code>, and access Global Fishing Watch’s public data. Since you found this post, I’m going to assume that you are somewhat familiar with Global Fishing Watch and are looking to explore and analyze the data using <code>R</code>. If you are not, check out our Science publication <a href="http://science.sciencemag.org/content/359/6378/904">Tracking the global footprint of fisheries</a> as well as the <a href="http://globalfishingwatch.io/">Global Fishing Watch Open Data</a> portal.</p>
 <div id="what-is-bigquery" class="section level1">
 <h1>What is BigQuery</h1>
-<p><a href="https://bigquery.cloud.google.com/welcome">BigQuery</a> is Google’s platform to store and analyze massive datasets. It is very fast and well integrated to other Google products such as cloud storage, and it’s free to use for up to 1TB of data analyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries.</p>
-<p>To start using BigQuery, you need to have a gmail account and a BigQuery-enabled project. If you don’t have this yet, please follow the steps in this quickstart guide <a href="https://cloud.google.com/bigquery/quickstart-web-ui">quickstart guide</a> and come back when done.</p>
+<p><a href="https://bigquery.cloud.google.com/welcome">BigQuery</a> is Google’s platform to store and analyze large datasets. It is very fast and well integrated to other Google products such as cloud storage, and it’s free to use for up to 1TB of data analyzed each month, and up to 10GB of data stored. As any other database, it understands SQL and the online editor is a friendly place to learn and troubleshoot your queries. <strong>Big Query understands both Legacy and Standard SQL. Unfortunately, these languages are more different that you would expect, which makes things confusing. In this post I will use Standard SQL since Big Query is slowly migrating to only using this language in the future</strong></p>
+<p>To start using BigQuery, you need to have a gmail account and a Big Query-enabled project. If you don’t have this yet, please follow the steps in this quickstart guide <a href="https://cloud.google.com/bigquery/quickstart-web-ui">quickstart guide</a> and come back when done.</p>
 </div>
 <div id="global-fishing-watchs-data-in-bigquery" class="section level1">
 <h1>Global Fishing Watch’s data in BigQuery</h1>
-<p>Now that you have a BigQuery-enabled project, go the <a href="https://bigquery.cloud.google.com">BigQuery’s UI page</a>. You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -&gt; display project, and enter “global-fishing-watch” (without the quotes) on the Project ID. Click OK, and you should then have a <code>global-fishing-watch</code> project in your side bar. This project contains, two datasets: <code>&quot;gfw_public_data&quot;</code> and <code>&quot;globa_footprint_of_fisheries&quot;</code>. We will work on the latter, which contains the public data released with the <em>Science</em> publication. This dataset contains four tables</p>
+<p>Now that you have a BigQuery-enabled project, go the <a href="https://bigquery.cloud.google.com">BigQuery’s UI page</a>. You should see your project in the side bar, above the Public Datasets project. Click on the small arrow next to your project name, then switch to project -&gt; display project, and enter “global-fishing-watch” (without the quotes) on the Project ID. Click OK, and you should then have a <code>global-fishing-watch</code> project in your side bar. This project contains, two datasets: <code>&quot;gfw_public_data&quot;</code> and <code>&quot;global_footprint_of_fisheries&quot;</code>. We will work on the latter, which contains the public data released with the <em>Science</em> publication. This dataset contains the following four tables:</p>
 <ul>
 <li><code>fishing_effort</code>: Daily Fishing Effort and Vessel Presence at 100th Degree Resolution by Flag State and Gear Type, 2012-2016</li>
 <li><code>fishing_effort_byvessel</code>:Daily Fishing Effort at 10th Degree Resolution by MMSI, 2012-2016</li>
@@ -29,21 +29,21 @@ draft: true
 <div id="establishing-a-connection" class="section level1">
 <h1>Establishing a connection</h1>
 <p>The first step to use the data from R, is to set a connection with BigQuery. This is done using the <code>DBI</code> and <code>bigrquery</code> packages:</p>
-<pre class="r"><code>library(tidyverse)
-library(DBI)
+<pre class="r"><code>library(DBI)
 library(bigrquery)
 
-BQ_connection &lt;-  dbConnect(dbi_driver(), 
+BQ_connection &lt;-  dbConnect(bigquery(), 
                             project = &#39;global-fishing-watch&#39;,
                             dataset = &quot;global_footprint_of_fisheries&quot;, 
-                            billing = &quot;ng-gfw&quot;)</code></pre>
+                            billing = &quot;ng-gfw&quot;, # your billing account name
+                            use_legacy_sql = FALSE) # specify we are using Standard SQL</code></pre>
 <p>We then need to authenticate the connection. This can be done when running your first query such as listing the tables in your connection through the function <code>dbListTable()</code>. This will trigger a prompt in your R session asking if you want to cache your credentials. Allow access and return to RStudio.</p>
 <pre class="r"><code>DBI::dbListTables(BQ_connection)</code></pre>
 <pre><code>## [1] &quot;fishing_effort&quot;          &quot;fishing_effort_byvessel&quot;
 ## [3] &quot;fishing_vessels&quot;         &quot;vessels&quot;</code></pre>
 <p>Now we are all set to start querying and analyzing Global Fishing Watch’s data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases</p>
 <ol style="list-style-type: decimal">
-<li>Summarize the number of vessels by flag state in 2016</li>
+<li>Summarize the number of fishing vessels by flag state in 2016</li>
 <li>Make a time series of fishing effort for China’s trawlers fleet</li>
 <li>Make a map of fishing effort for a particular region of the ocean</li>
 </ol>
@@ -54,8 +54,9 @@ BQ_connection &lt;-  dbConnect(dbi_driver(),
 <p>The first step here is to connect to the table we want to query using the <code>tbl()</code> function:</p>
 <pre class="r"><code>library(tidyverse) #loads dplyr and friends
 
-fishing_vessels &lt;- dplyr::tbl(BQ_connection, &quot;fishing_vessels&quot;)</code></pre>
-<p>However, notice that the variable created in your environment is not a dataframe or tibble but instead a list. This is because <code>tbl()</code> creates a reference to the table in the remote database but does not bring the actual data into memory. When you print it out, you’ll see it looks like a tibble but its class is <code>tbl_sql</code>.</p>
+fishing_vessels &lt;- dplyr::tbl(BQ_connection, 
+                              &quot;fishing_vessels&quot;) # connects to a table</code></pre>
+<p>However, notice that the variable created in your environment is not a dataframe or tibble but instead a list. This is because <code>tbl()</code> creates a reference to the table in the remote database but does not bring the actual data into memory. When you print it out, you’ll see it looks like a tibble but the class is <code>tbl_sql</code>.</p>
 <pre class="r"><code>fishing_vessels</code></pre>
 <pre><code>## # Source:   table&lt;fishing_vessels&gt; [?? x 11]
 ## # Database: BigQueryConnection
@@ -75,7 +76,7 @@ fishing_vessels &lt;- dplyr::tbl(BQ_connection, &quot;fishing_vessels&quot;)</co
 ## #   active_2014 &lt;lgl&gt;, active_2015 &lt;lgl&gt;, active_2016 &lt;lgl&gt;</code></pre>
 <pre class="r"><code>class(fishing_vessels)</code></pre>
 <pre><code>## [1] &quot;tbl_dbi&quot;  &quot;tbl_sql&quot;  &quot;tbl_lazy&quot; &quot;tbl&quot;</code></pre>
-<p>The most important difference between a local ordinary dataframe and a remote dataframe of class <code>tbl_sql</code> is that the your R code will run in the database. To do this efficiently, <code>dplyr</code> will be as lazy as possible by 1) not pulling data into R unless explicitly asked to, and 2) delaying the actual communication to the database until the last possible moment (i.e., after it collects all that you want to do).</p>
+<p>The most important difference between a local dataframe and a remote dataframe of class <code>tbl_sql</code> is that in the latter your R code will run directly the database, not in memory. To do this efficiently, <code>dplyr</code> will be as lazy as possible by 1) not pulling data into R unless explicitly asked to, and 2) delaying the actual communication to the database until the last possible moment (i.e., after it collects all that you want to do).</p>
 <p>Now, we can continue to use the dplyr verbs we are familiar with and summarize the table as we wish:</p>
 <pre class="r"><code>summary_by_country_and_gear &lt;- fishing_vessels %&gt;% 
   filter(active_2016) %&gt;% 
@@ -83,9 +84,9 @@ fishing_vessels &lt;- dplyr::tbl(BQ_connection, &quot;fishing_vessels&quot;)</co
   summarize(n_vessels = n_distinct(mmsi),
             total_GT = sum(tonnage)) %&gt;% 
   arrange(desc(n_vessels))</code></pre>
-<p>As you will see, the object created in our environment is not the data we wanted. In fact the above code never touched the database, only recorded the instructions to query the data. To pull the data into a local <code>tibble</code> we need to explicitly ask for it with the function <code>collect()</code>.</p>
+<p>Again, the object created in our environment is not the dataframe we expected. In fact, the above code never touched the database, it only recorded the instructions to query the data. To pull the data into a local <code>tibble</code> we need to explicitly ask for it with the function <code>collect()</code>.</p>
 <pre class="r"><code>summary_by_country_and_gear &lt;- collect(summary_by_country_and_gear)</code></pre>
-<p>We can the make a simple summarizing plot:</p>
+<p>Now we have an actual dataframe with which we can make a simple summarizing plot:</p>
 <pre class="r"><code>top_20_flags &lt;- summary_by_country_and_gear %&gt;% 
   group_by(flag) %&gt;% 
   summarize(n_vessels = sum(n_vessels)) %&gt;% 
@@ -98,11 +99,12 @@ summary_by_country_and_gear %&gt;%
   ggplot(aes(x = forcats::fct_reorder(flag, n_vessels), y = n_vessels, fill = geartype))+
   geom_col()+
   coord_flip()+
+  labs(x  = &quot;&quot;)+
   hrbrthemes::theme_ipsum()+
   ggsci::scale_fill_startrek()</code></pre>
 <p><img src="/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-7-1.png" width="1344" style="display: block; margin: auto;" /></p>
 <p>Chinese Trawlers are, by far, the largest fleet in the Global Fishing Watch Database.</p>
-<p>This approach is straight forward and works perfectly for simple queries. However, it is not yet capable of doing many SQL statements, and thus I recommend to become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch. This will help you troubleshoot when things don’t work as expected and it will make it easier to reach out to the Global Fishing Watch community for help. A couple of great resources to learn are: <a href="https://www.codecademy.com/learn/learn-sql">Learn SQL | Codecademy</a>, and <a href="https://learncodethehardway.org/sql/">Learn SQL the Hard Way</a>. Another way to start learning SQL is to use the function <code>show_query()</code> from <code>dplyr</code>, which will show you what your R code gets translated as in SQL, behind scenes.</p>
+<p>This approach is straight forward and works perfectly for simple queries. However, I recommend you become proficient with SQL to make the most of the power of BigQuery and Global Fishing Watch data. This will help you troubleshoot when things don’t work as expected and it will make it easier to reach out to the Global Fishing Watch community for help. A couple of great resources to learn are: <a href="https://www.codecademy.com/learn/learn-sql">Learn SQL | Codecademy</a>, and <a href="https://learncodethehardway.org/sql/">Learn SQL the Hard Way</a>. Another way to start learning SQL is to use the function <code>show_query()</code> from <code>dplyr</code>, which will show you what your R code gets translated as in SQL, behind scenes.</p>
 <pre class="r"><code>fishing_vessels %&gt;% 
   filter(active_2016) %&gt;% 
   group_by(flag, geartype) %&gt;% 
@@ -119,7 +121,9 @@ summary_by_country_and_gear %&gt;%
 </div>
 <div id="make-a-time-series-of-fishing-effort-for-chinas-trawlers-fleet" class="section level1">
 <h1>2. Make a time series of fishing effort for China’s trawlers fleet</h1>
-<p>For this analysis we need to summarize fishing by date, only for Chinese trawlers between 2013-2016. So, we need to join the effort and vessels characteristics data and filter effort for Chinese trawlers only.</p>
+<div id="the-dplyr-way" class="section level3">
+<h3>The dplyr way</h3>
+<p>For this analysis we need to summarize fishing by date, only for Chinese trawlers between 2012-2016. So, we need to join the effort and vessels characteristics data and filter effort for Chinese trawlers only. An inner join is the perfect operation for this.</p>
 <p>Using the previous approach, we would write something like this:</p>
 <pre class="r"><code>fishing_vessels &lt;- dplyr::tbl(BQ_connection, &quot;fishing_vessels&quot;)
 fishing_effort_byvessel &lt;- dplyr::tbl(BQ_connection, &quot;fishing_effort_byvessel&quot;)
@@ -128,9 +132,116 @@ ts_china_effort &lt;- fishing_effort_byvessel %&gt;%
   inner_join(fishing_vessels %&gt;% 
                filter(flag == &quot;CHN&quot;, geartype == &quot;trawlers&quot;), by = &quot;mmsi&quot;) %&gt;% 
   group_by(date) %&gt;% 
-  summarize(fishing_hours = sum(fishing_hours)) %&gt;% 
+  summarize(fishing_hours = sum(fishing_hours, na.rm = T)) %&gt;% 
   ungroup() %&gt;% 
-  collect()</code></pre>
+  arrange(date) %&gt;% 
+  collect()
+
+head(ts_china_effort)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   date       fishing_hours
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 2012-01-06         11.0 
+## 2 2012-01-07         20.6 
+## 3 2012-01-08         10.7 
+## 4 2012-01-09          7.53
+## 5 2012-01-10          4.36
+## 6 2012-01-11         17.4</code></pre>
+<p>Until recently, joining datasets through <code>bigrquery</code> in this way was not possible. This has been implemented a couple weeks ago in the development version of the <code>bigrquery</code> package, so make sure to install it for this to work.</p>
+</div>
+<div id="why-would-i-ever-write-sql" class="section level3">
+<h3>Why would I ever write SQL?</h3>
+<p>So, if I can simply write dplyr verbs to analyze data, why ever bother with SQL? Well, while the <code>bigrquery</code> library is a fantastic tool for simple queries, I have found some important limitations that are a deal breaker for me. Here my reasons for writing SQL directly:</p>
+<ul>
+<li>The translation of functions across languages does not always work as expected. This results is a lot of head scratching and hacky workarounds that are not intuitive. For instance, try filtering the above time series for a particular year of interest.</li>
+<li>If you are new to SQL, Big Query’s online editor is a fantastic learning tool. 1) It verifies your queries and tells you if/where you have a mistake. 2) It has function, variable, and table auto completion. And 3) it has tooltip helpers that describe the functions you are trying to use.</li>
+<li>Big Query also tells you how much data you are going to query and therefore how much are you going to be billed for. This is important - especially if you are learning - because you do not want to mistakenly write an expensive query that burns all your Google Credits. I learned this the hard way. As a rule of thumb, querying 1TB of data is equal to $6.</li>
+<li>Lastly, writing and understanding SQL will help you troubleshoot and get help from the GFW community. Those guys do not work in R, so if you want their help, you need to speak their language :)</li>
+</ul>
+<p>OK. So hopefully I have convinced you that learning SQL is worth it. Again, some great resources to learn are: <a href="https://www.codecademy.com/learn/learn-sql">Learn SQL | Codecademy</a>, and <a href="https://learncodethehardway.org/sql/">Learn SQL the Hard Way</a>.</p>
+</div>
+<div id="the-sql-way" class="section level3">
+<h3>The SQL way</h3>
+<p>For the rest of this tutorial I’m going to assume that you have put in your hours and you are familiar with SQL. So, I will only focus on showing a couple workflows to write SQL and connect to Big Query without ever leaving R.</p>
+<p>One approach is writing your queries as strings, and later using the <code>bigrquery</code> package to execute them using the same connection we have specified above. A great way to write your queries as strings is using the <code>glue_sql()</code> function from the <code>glue</code> library. This allows you to 1) use local R variables inside your SQL queries, and 2) divide long queries into sub-queries. This is illustrated below:</p>
+<pre class="r"><code># Define your variables
+min_year &lt;- 2012
+gear &lt;- &quot;trawlers&quot;
+flag &lt;- &quot;CHN&quot;
+
+# Query to get effort by mmsi and date after 2012
+all_effort_by_mmsi_query &lt;- glue::glue_sql(
+  &#39;
+  Select
+  date,
+  mmsi,
+  fishing_hours
+  FROM
+  `global-fishing-watch.global_footprint_of_fisheries.fishing_effort_byvessel`
+  WHERE   
+  EXTRACT(YEAR FROM PARSE_DATE(&quot;%F&quot;,date)) &gt; {min_year}
+  &#39;,
+  .con = BQ_connection
+  )
+
+# Query to extract only chinese trawlers
+chinese_vessels_sub_query &lt;- glue::glue_sql(
+  &quot;
+  Select
+  mmsi
+  FROM
+  `global-fishing-watch.global_footprint_of_fisheries.fishing_vessels`
+  WHERE flag = {flag}
+  AND geartype = {gear}
+  &quot;,
+  .con = BQ_connection
+  )</code></pre>
+<p>In each of these sub queries we are using locally defined variables by wrapping them with <code>{}</code>. Next, we can combine these sub-queries into a larger final query by wrapping the sub-query variable names with <code>{}</code> as we did above.</p>
+<pre class="r"><code>full_sql &lt;- glue::glue_sql(
+  &quot;
+  SELECT
+  date,
+  sum(fishing_hours) AS fishing_hours
+  FROM ({all_effort_by_mmsi_query}) AS a
+  LEFT JOIN  ({chinese_vessels_sub_query}) AS b
+  ON a.mmsi = b.mmsi
+  GROUP BY date
+  ORDER BY date
+  DESC
+  &quot;,
+  .con = BQ_connection
+  )</code></pre>
+<p>Notice that if you print the variable <code>full_sql</code> you can see the entire SQL query that has been built.</p>
+<pre class="r"><code>full_sql</code></pre>
+<pre><code>## &lt;SQL&gt; SELECT
+## date,
+## sum(fishing_hours) AS fishing_hours
+## FROM (Select
+## date,
+## mmsi,
+## fishing_hours
+## FROM
+## `global-fishing-watch.global_footprint_of_fisheries.fishing_effort_byvessel`
+## WHERE   
+## EXTRACT(YEAR FROM PARSE_DATE(&quot;%F&quot;,date)) &gt; 2012) AS a
+## LEFT JOIN  (Select
+## mmsi
+## FROM
+## `global-fishing-watch.global_footprint_of_fisheries.fishing_vessels`
+## WHERE flag = &#39;CHN&#39;
+## AND geartype = &#39;trawlers&#39;) AS b
+## ON a.mmsi = b.mmsi
+## GROUP BY date
+## ORDER BY date
+## DESC</code></pre>
+<p>Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then use the function <code>query_exec()</code> from the <code>bigrquery</code> library like this:</p>
+<pre class="r"><code>china_trawlers_ts &lt;- bigrquery::query_exec(full_sql, 
+                                           project = &quot;ng-gfw&quot;, 
+                                           allowLargeResults = TRUE,
+                                           use_legacy_sql = FALSE)</code></pre>
+<pre><code>## 0 bytes processed</code></pre>
+<p><strong>You do not have to use the <code>glue</code> library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up</strong></p>
+<p>The resulting object from this query is a dataframe of daily total fishing effort by Chinese trawlers, from 2013 onwards, arranged by date. Now lets plot the data to observe the effect of the Chinese new year and the summer fishing moratorium on China’s temporal patterns of fishing effort.</p>
 <pre class="r"><code>moratoria_dates &lt;- tibble(year = c(2013:2016)) %&gt;% 
   mutate(start_date = lubridate::ymd(paste(year,&quot;-06-01&quot;,sep = &quot;&quot;)),
          end_date = lubridate::ymd(paste(year,&quot;-08-01&quot;,sep = &quot;&quot;)))
@@ -161,7 +272,7 @@ new_year_dates &lt;- tibble(year = c(2013:2016),
                 fill = &quot;dodgerblue&quot;),
             alpha = 0.5,
             show.legend = TRUE) +
-  geom_line(data = ts_china_effort %&gt;% 
+  geom_line(data = china_trawlers_ts %&gt;% 
                mutate(date = lubridate::ymd(date)) %&gt;% 
                filter(lubridate::year(date) &gt; 2012),
            aes(x = date, y = fishing_hours), 
@@ -175,9 +286,9 @@ new_year_dates &lt;- tibble(year = c(2013:2016),
         axis.text.y = element_text(size = 10),
         axis.text.x = element_text(size = 10),
         axis.title = element_text(size = 10),
-        legend.justification = &quot;top&quot;,
         legend.text = element_text(size = 6),
-        legend.position = c(1,1),
+        legend.justification = &quot;center&quot;,
+        legend.position = &quot;bottom&quot;,
         plot.margin = margin(2,2,2,2)) + 
   scale_x_date(date_breaks = &quot;1 year&quot;, 
                date_labels = &quot;%Y &quot;) +
@@ -189,5 +300,90 @@ new_year_dates &lt;- tibble(year = c(2013:2016),
                     name = &quot; &quot;,
                     labels = c(&quot;Chinese New Year&quot;, &quot;Moratoria&quot;)) +
   guides(colour = guide_legend(override.aes = list(alpha = .5)))</code></pre>
-<p><img src="/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-11-1.png" width="1344" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-15-1.png" width="1344" style="display: block; margin: auto;" /></p>
+<p>Important conclusion: Holidays can have as large an effect as strictly enforced policies on fishing activity. We need more holidays!</p>
+</div>
+</div>
+<div id="make-a-map-of-fishing-effort-for-a-particular-region-of-the-ocean" class="section level1">
+<h1>3. Make a map of fishing effort for a particular region of the ocean</h1>
+<p>A common use of Global Fishing Watch’s data is to make maps of fishing effort in an area of interest. I will show how you can do this and highlight another approach to query data from within R, using R Notebooks and chunks. For this, let’s make a map of fishing effort around the Azores Archipelago, Portugal.</p>
+<p>If you are not familiar with R Notebooks, they are a type of code script that allows you to mix prose and code in a single document, with chunks of code that can be run independently and interactively. This is called literate programming, and makes analysis easier to reproduce. In fact, this tutorial is an R Notebook!. For more details on R Notebooks take a look at <a href="https://bookdown.org/yihui/rmarkdown/notebook.html">R Markdown: The Definitive Guide</a> by Yihui Xie. One important advantage of R Notebooks is that chunks of code can use pretty much any programming language. This means that you could mix python, SQL, and R in a single, easy to read document! For our example we will use a SQL chunk to directly write an SQL query and get the data of fishing effort around the Azores.</p>
+<p>First, lets get a map of the Azores to obtain the bounding of of our region of interest. To do this we can use the <code>mregions</code> package and a couple handy functions from the <code>sf</code> package.</p>
+<pre class="r"><code># get the shapefile from mregions
+
+azores_eez &lt;- mregions::mr_shp(key = &quot;MarineRegions:eez&quot;,
+                 filter = &quot;Portuguese Exclusive Economic Zone (Azores)&quot;,
+                 maxFeatures = 200)
+
+# transform the shapefile into an sf object
+azores_eez &lt;- azores_eez %&gt;% 
+  sf::st_as_sf()
+
+# get the bounding box of the shapefile
+azores_bbox &lt;- sf::st_bbox(azores_eez)
+
+# extend the bounding box 1 degree in every direction.
+min_lon &lt;- azores_bbox[[&quot;xmin&quot;]] - 1 
+max_lon &lt;- azores_bbox[[&quot;xmax&quot;]] + 1
+min_lat &lt;- azores_bbox[[&quot;ymin&quot;]] - 1
+max_lat &lt;- azores_bbox[[&quot;ymax&quot;]] + 1 
+
+# define mapping resoluion in degrees
+resolution &lt;- 0.1</code></pre>
+<p>Now, we query the data. To do this with a sql chunk, we need to simply specify the language we are using (sql), the database connection (same as before), and the name we want to give to the variable that will contain the results of the query.</p>
+<pre><code>```{sql connection = BQ_connection, output.var = &quot;binned_effort_around_Azores&quot;, echo = FALSE}
+SELECT
+  FLOOR(lat_bin/?resolution)*?resolution + 0.5*?resolution lat_bin_center,
+  FLOOR(lon_bin/?resolution)*?resolution + 0.5*?resolution lon_bin_center,
+  SUM(fishing_hours) fishing_hours
+FROM (
+  SELECT
+    lat_bin/100 lat_bin,
+    lon_bin/100 lon_bin,
+    fishing_hours
+  FROM
+    `global-fishing-watch.global_footprint_of_fisheries.fishing_effort`
+  WHERE
+    _PARTITIONTIME &gt;= &#39;2016-01-01 00:00:00&#39;
+    AND _PARTITIONTIME &lt; &#39;2016-12-31 00:00:00&#39;)
+  WHERE 
+  lat_bin &gt;= ?min_lat
+  AND lat_bin &lt;= ?max_lat
+  AND lon_bin &gt;= ?min_lon
+  AND lon_bin &lt;= ?max_lon
+GROUP BY
+  lat_bin_center,
+  lon_bin_center
+HAVING 
+  fishing_hours &gt; 0
+```</code></pre>
+<p>OK, so what just happened here? First, we filtered the data for the year 2016 and converted the coordinates from 100th of a degree to degrees (See table schema in BigQuery). Then we filtered the coordinates so that they are inside our bounding box. To do this we add <code>?</code> before the name of our locally defined variable and its value gets automagically added to the query. Lastly, we group and summarize the effort data with a resolution of 0.1º degrees and exclude anything with no fishing effort.</p>
+<pre class="r"><code>binned_effort_around_Azores %&gt;% 
+  filter(fishing_hours &gt; 1) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot()+
+  geom_raster(aes(x = lon_bin_center, y = lat_bin_center, fill = fishing_hours))+
+  viridis::scale_fill_viridis(name = &quot;Fishing hours&quot; ,
+                              trans = &quot;log&quot;,
+                              breaks = scales::log_breaks(n = 10, base = 4))+
+  geom_sf(data = azores_eez,
+            fill = NA,
+            col = &quot;black&quot;,
+            size = 1.4
+            ) +
+   hrbrthemes::theme_ipsum()+
+  labs(title = &quot;Fishing effort inside and around Azores&quot;,
+       subtitle = &quot;2017&quot;,
+       y = &quot;&quot;,
+       x = &quot;&quot;)+
+    theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        plot.title = element_text(size = 14, hjust = 0),
+        plot.subtitle = element_text(size = 14, hjust = 0),
+        plot.margin = margin(10,0,0,0))</code></pre>
+<p><img src="/post/2018-03-16-getting-global-fishing-watch-from-google-bigquery-using-r_files/figure-html/unnamed-chunk-18-1.png" width="1344" style="display: block; margin: auto;" /></p>
+</div>
+<div id="closing-remarks" class="section level1">
+<h1>Closing remarks</h1>
+<p>Global Fishing Watch’s commitment to transparency and open source data, is rapidly changing the way we do research in fisheries science, and marine conservation. Powerful tools like Big Query and useful R packages (e.g., <code>DBI</code>, <code>bigrquery</code>, <code>rmarkdown</code>) are making these data accessible and easy to analyze, which will hopefully increase the rate it’s being used and the impact it can have. Have fun!</p>
 </div>
