@@ -55,15 +55,17 @@ We then need to authenticate the connection. This can be done when running your 
 DBI::dbListTables(BQ_connection)
 ```
 
-Now we are all set to start querying and analyzing Global Fishing Watch's data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases
+Now we are all set to start querying and analyzing Global Fishing Watch's data. There are a couple of approaches to do this and whichever you use depends primarily on: 1) your experience with SQL, 2) how much you dislike SQL, and 3) how much you use R notebooks as opposed to classic R scripts. To illustrate these approches, I will walk through 3 simple analyses that exemplify the type of queries you may want to do:
 
-  1. Summarize the number of fishing vessels by flag state in 2016
+  1. Summarize the number of fishing vessels by flag state
   2. Make a time series of fishing effort for China's trawlers fleet
   3. Make a map of fishing effort for a particular region of the ocean
+  
+The first example shows how to query data without writing a single SQL statement by leveraging the power of the `dbplyr` package. While very convenient, this approach has some limitations that I will mention below. The second and third examples use workflows that require you to write SQL, but give you more control and flexibility to do more interesting and complex queries. These, in my experience, are the best ways to unleash the full potential of Google Big Query and Global Fishing Watch's data and I highly recommend you to explore them. 
 
 # 1. Summarize the number of vessels by flag state and gear type
 
-This is possibly one the first and simplest queries to do. For this use case, we will use the `dbplyr` and `bigrquery` packages that allow us to avoid the need to write SQL. We just write the `dplyr` verbs and functions we all love, and the `dbplyr` package translates them into SQL in the back-end. The main advantages of this approach is that it's very friendly and readable, and prevents us from the cognitive dissonance of switching between programming languages. However, SQL is a very large language and `dbplyr` does not do everything; it focuses on `SELECT` statements which are often what we use the most.   
+This is possibly one the first and simplest queries to do. For this use case, we will use the `dbplyr` and `bigrquery` packages that allow us to avoid the need to write SQL. We just write the `dplyr` verbs and functions we all love, and the `dbplyr` package translates them into SQL in the back-end. The main advantages of this approach is that it's very friendly and readable, and prevents us from the cognitive overhead of switching between programming languages. However, SQL is a very large language and `dbplyr` does not do everything; it focuses on `SELECT` statements which are often what we use the most.   
 
 The first step here is to connect to the table we want to query using the `tbl()` function:
 
@@ -246,7 +248,7 @@ china_trawlers_ts <- dbGetQuery(BQ_connection,
                                 full_sql)
 ```
 
-**You do not have to use the `glue` library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up**
+**You do not have to use the `glue` library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up.**
 
 The resulting object from this query is a dataframe of daily total fishing effort by Chinese trawlers, from 2013 onwards, arranged by date. Now lets plot the data to observe the effect of the Chinese new year and the summer fishing moratorium on China's temporal patterns of fishing effort. 
 

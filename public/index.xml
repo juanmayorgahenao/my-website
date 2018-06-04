@@ -63,16 +63,17 @@ BQ_connection &amp;lt;-  dbConnect(bigquery(),
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;DBI::dbListTables(BQ_connection)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;fishing_effort&amp;quot;          &amp;quot;fishing_effort_byvessel&amp;quot;
 ## [3] &amp;quot;fishing_vessels&amp;quot;         &amp;quot;vessels&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now we are all set to start querying and analyzing Global Fishing Watch’s data. There are a couple of approaches to do this, and I will illustrate each one with the following use cases&lt;/p&gt;
+&lt;p&gt;Now we are all set to start querying and analyzing Global Fishing Watch’s data. There are a couple of approaches to do this and whichever you use depends primarily on: 1) your experience with SQL, 2) how much you dislike SQL, and 3) how much you use R notebooks as opposed to classic R scripts. To illustrate these approches, I will walk through 3 simple analyses that exemplify the type of queries you may want to do:&lt;/p&gt;
 &lt;ol style=&#34;list-style-type: decimal&#34;&gt;
-&lt;li&gt;Summarize the number of fishing vessels by flag state in 2016&lt;/li&gt;
+&lt;li&gt;Summarize the number of fishing vessels by flag state&lt;/li&gt;
 &lt;li&gt;Make a time series of fishing effort for China’s trawlers fleet&lt;/li&gt;
 &lt;li&gt;Make a map of fishing effort for a particular region of the ocean&lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;The first example shows how to query data without writing a single SQL statement by leveraging the power of the &lt;code&gt;dbplyr&lt;/code&gt; package. While very convenient, this approach has some limitations that I will mention below. The second and third examples use workflows that require you to write SQL, but give you more control and flexibility to do more interesting and complex queries. These, in my experience, are the best ways to unleash the full potential of Google Big Query and Global Fishing Watch’s data and I highly recommend you to explore them.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;summarize-the-number-of-vessels-by-flag-state-and-gear-type&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;1. Summarize the number of vessels by flag state and gear type&lt;/h1&gt;
-&lt;p&gt;This is possibly one the first and simplest queries to do. For this use case, we will use the &lt;code&gt;dbplyr&lt;/code&gt; and &lt;code&gt;bigrquery&lt;/code&gt; packages that allow us to avoid the need to write SQL. We just write the &lt;code&gt;dplyr&lt;/code&gt; verbs and functions we all love, and the &lt;code&gt;dbplyr&lt;/code&gt; package translates them into SQL in the back-end. The main advantages of this approach is that it’s very friendly and readable, and prevents us from the cognitive dissonance of switching between programming languages. However, SQL is a very large language and &lt;code&gt;dbplyr&lt;/code&gt; does not do everything; it focuses on &lt;code&gt;SELECT&lt;/code&gt; statements which are often what we use the most.&lt;/p&gt;
+&lt;p&gt;This is possibly one the first and simplest queries to do. For this use case, we will use the &lt;code&gt;dbplyr&lt;/code&gt; and &lt;code&gt;bigrquery&lt;/code&gt; packages that allow us to avoid the need to write SQL. We just write the &lt;code&gt;dplyr&lt;/code&gt; verbs and functions we all love, and the &lt;code&gt;dbplyr&lt;/code&gt; package translates them into SQL in the back-end. The main advantages of this approach is that it’s very friendly and readable, and prevents us from the cognitive overhead of switching between programming languages. However, SQL is a very large language and &lt;code&gt;dbplyr&lt;/code&gt; does not do everything; it focuses on &lt;code&gt;SELECT&lt;/code&gt; statements which are often what we use the most.&lt;/p&gt;
 &lt;p&gt;The first step here is to connect to the table we want to query using the &lt;code&gt;tbl()&lt;/code&gt; function:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse) #loads dplyr and friends
 
@@ -259,7 +260,7 @@ chinese_vessels_sub_query &amp;lt;- glue::glue_sql(
 &lt;p&gt;Up until this point we have not touched the actual data, we have only laid out the recipe for querying it. To actually run the query we then can use the function &lt;code&gt;dbGetQuery()&lt;/code&gt; from the &lt;code&gt;DBI&lt;/code&gt; library like:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;china_trawlers_ts &amp;lt;- dbGetQuery(BQ_connection, 
                                 full_sql)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;strong&gt;You do not have to use the &lt;code&gt;glue&lt;/code&gt; library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;You do not have to use the &lt;code&gt;glue&lt;/code&gt; library to compose queries and execute them via this method. You can simply write the SQL queries as strings. I just wanted to show this handy function because writing long SQL queries in a single string often gets too crazy to manage without splitting things up.&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;The resulting object from this query is a dataframe of daily total fishing effort by Chinese trawlers, from 2013 onwards, arranged by date. Now lets plot the data to observe the effect of the Chinese new year and the summer fishing moratorium on China’s temporal patterns of fishing effort.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;moratoria_dates &amp;lt;- tibble(year = c(2013:2016)) %&amp;gt;% 
   mutate(start_date = lubridate::ymd(paste(year,&amp;quot;-06-01&amp;quot;,sep = &amp;quot;&amp;quot;)),
