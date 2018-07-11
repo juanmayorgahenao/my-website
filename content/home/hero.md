@@ -24,7 +24,6 @@ weight = 3
 #  label = '<i class="fa fa-download"></i> Install Now'
 +++
 
-"The sea, the great unifier, is man's only hope. Now, as never before, the old phrase has a literal meaning: we are all in the same boat" - Jacques Yves Cousteau
 
 
 
