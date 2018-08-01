@@ -3,7 +3,7 @@ title = "Wealthy countries dominate industrial fishing"
 date = "2018-08-01"
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.
-authors = ["Douglas J. McCauley","Caroline Jablonicky","Edward H. Allison","Christopher D. Golden","Francis H. Joyce","**Juan Mayorga**","David Kroodsma"]
+authors = ["D.J. McCauley","C. Jablonicky","E.H. Allison","C.D. Golden","F.H. Joyce","**J. Mayorga**","D. Kroodsma"]
 
 
 # Publication type.
