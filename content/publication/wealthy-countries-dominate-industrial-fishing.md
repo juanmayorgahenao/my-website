@@ -21,8 +21,7 @@ publication_types = ["2"]
 publication = "In *Science Advances*"
 
 # Abstract and optional shortened version.
-abstract = "The patterns by which different nations share global fisheries influence outcomes for food security, trajectories of economic development, and competition between industrial and small-scale fishing. We report patterns of industrial fishing effort for vessels flagged to higher- and lower-income nations, in marine areas within and beyond national jurisdiction, using analyses of high-resolution fishing vessel activity data. These analyses reveal global dominance of industrial fishing by wealthy nations. Vessels flagged to higher-income nations, for example, are responsible for 96.5% of the trackable industrial fishing on the high seas and 78% of such effort within the national waters of lower-income countries. These publicly accessible vessel tracking data have important limitations. However, insights from these new
-analyses can begin to strategically inform important international- and national-level efforts underway now to ensure equitable and sustainable sharing of fisheries."
+abstract = "The patterns by which different nations share global fisheries influence outcomes for food security, trajectories of economic development, and competition between industrial and small-scale fishing. We report patterns of industrial fishing effort for vessels flagged to higher- and lower-income nations, in marine areas within and beyond national jurisdiction, using analyses of high-resolution fishing vessel activity data. These analyses reveal global dominance of industrial fishing by wealthy nations. Vessels flagged to higher-income nations, for example, are responsible for 97% of the trackable industrial fishing on the high seas and 78% of such effort within the national waters of lower-income countries. These publicly accessible vessel tracking data have important limitations. However, insights from these new analyses can begin to strategically inform important international- and national-level efforts underway now to ensure equitable and sustainable sharing of fisheries."
 
 # Featured image thumbnail (optional)
 image_preview = ""
@@ -39,6 +38,10 @@ projects = ["global-fishing-watch"]
 url_pdf = "http://advances.sciencemag.org/content/4/8/eaau2161"
 url_code = ""
 url_project = ""
+
+# Custom links (optional).
+#   Uncomment line below to enable. For multiple links, use the form `[{...}, {...}, {...}]`.
+url_custom = [{name = "Press release", url = "http://www.news.ucsb.edu/2018/019138/troubled-waters"}]
 
 # Does the content use math formatting?
 math = true
