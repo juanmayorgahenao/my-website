@@ -11,6 +11,15 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Leveraging satellite technology to create true shark sanctuaries</title>
+      <link>/publication/leveraging-satellite-technology-to-create-true-shark-sanctuaries/</link>
+      <pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/publication/leveraging-satellite-technology-to-create-true-shark-sanctuaries/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Wealthy countries dominate industrial fishing</title>
       <link>/publication/wealthy-countries-dominate-industrial-fishing/</link>
       <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
@@ -101,18 +110,18 @@ fishing_vessels &amp;lt;- dplyr::tbl(BQ_connection,
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fishing_vessels&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## # Source:   table&amp;lt;fishing_vessels&amp;gt; [?? x 11]
 ## # Database: BigQueryConnection
-##         mmsi flag  geartype     length tonnage engine_power active_2012
-##        &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt;         &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt; &amp;lt;lgl&amp;gt;      
-##  1 603100157 AGO   trawlers       32.8    299.         734. FALSE      
-##  2 603100137 AGO   trawlers       34.6    396.         865. FALSE      
-##  3 603100161 AGO   trawlers       28.8    264.         652. FALSE      
-##  4 603100174 AGO   trawlers       30.7    300.         704. FALSE      
-##  5 603100164 AGO   trawlers       37.5    406.         851. FALSE      
-##  6 603100139 AGO   trawlers       27.4    277.         749. FALSE      
-##  7 603100175 AGO   trawlers       32.4    442.         889. FALSE      
-##  8 603100159 AGO   trawlers       37.8    444.         887. FALSE      
-##  9 603100160 AGO   trawlers       32.4    396.         812. FALSE      
-## 10 603703900 AGO   purse_seines   36.8    292.        1182. TRUE       
+##      mmsi flag  geartype length tonnage engine_power active_2012
+##     &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt;     &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt; &amp;lt;lgl&amp;gt;      
+##  1 6.03e8 AGO   trawlers   32.8    299.         734. FALSE      
+##  2 6.03e8 AGO   trawlers   34.6    396.         865. FALSE      
+##  3 6.03e8 AGO   trawlers   28.8    264.         652. FALSE      
+##  4 6.03e8 AGO   trawlers   30.7    300.         704. FALSE      
+##  5 6.03e8 AGO   trawlers   37.5    406.         851. FALSE      
+##  6 6.03e8 AGO   trawlers   27.4    277.         749. FALSE      
+##  7 6.03e8 AGO   trawlers   32.4    442.         889. FALSE      
+##  8 6.03e8 AGO   trawlers   37.8    444.         887. FALSE      
+##  9 6.03e8 AGO   trawlers   32.4    396.         812. FALSE      
+## 10 6.04e8 AGO   purse_s…   36.8    292.        1182. TRUE       
 ## # ... with more rows, and 4 more variables: active_2013 &amp;lt;lgl&amp;gt;,
 ## #   active_2014 &amp;lt;lgl&amp;gt;, active_2015 &amp;lt;lgl&amp;gt;, active_2016 &amp;lt;lgl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;class(fishing_vessels)&lt;/code&gt;&lt;/pre&gt;
@@ -434,7 +443,9 @@ HAVING
       <pubDate>Thu, 15 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/mapping-the-global-network-of-transnational-fisheries/</guid>
-      <description>&lt;div id=&#34;TOC&#34;&gt;
+      <description>&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+&lt;div id=&#34;TOC&#34;&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;#the-dataset&#34;&gt;The dataset&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#making-the-dataset-spatial&#34;&gt;Making the dataset spatial&lt;/a&gt;&lt;/li&gt;
@@ -1042,14 +1053,14 @@ end_lon
 &lt;th style=&#34;text-align:right;&#34;&gt;
 end_lat
 &lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+geometry
+&lt;/th&gt;
 &lt;th style=&#34;text-align:right;&#34;&gt;
 line_id
 &lt;/th&gt;
 &lt;th style=&#34;text-align:left;&#34;&gt;
 coords
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-geometry
 &lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
@@ -1085,14 +1096,14 @@ Croatia
 &lt;td style=&#34;text-align:right;&#34;&gt;
 43.43
 &lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43)
+&lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 1
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 list(X = c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65), Y = c(40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43), subline_id = c(1, 1, 1, 1, 1))
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-c(19.11, 18.2703942103055, 17.4142148534604, 16.5409297455863, 15.65, 40.93, 41.5646106334205, 42.1929929541022, 42.8148815460332, 43.43)
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;

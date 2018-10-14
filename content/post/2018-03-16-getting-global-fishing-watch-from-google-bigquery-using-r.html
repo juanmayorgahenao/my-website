@@ -81,18 +81,18 @@ fishing_vessels &lt;- dplyr::tbl(BQ_connection,
 <pre class="r"><code>fishing_vessels</code></pre>
 <pre><code>## # Source:   table&lt;fishing_vessels&gt; [?? x 11]
 ## # Database: BigQueryConnection
-##         mmsi flag  geartype     length tonnage engine_power active_2012
-##        &lt;int&gt; &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;      
-##  1 603100157 AGO   trawlers       32.8    299.         734. FALSE      
-##  2 603100137 AGO   trawlers       34.6    396.         865. FALSE      
-##  3 603100161 AGO   trawlers       28.8    264.         652. FALSE      
-##  4 603100174 AGO   trawlers       30.7    300.         704. FALSE      
-##  5 603100164 AGO   trawlers       37.5    406.         851. FALSE      
-##  6 603100139 AGO   trawlers       27.4    277.         749. FALSE      
-##  7 603100175 AGO   trawlers       32.4    442.         889. FALSE      
-##  8 603100159 AGO   trawlers       37.8    444.         887. FALSE      
-##  9 603100160 AGO   trawlers       32.4    396.         812. FALSE      
-## 10 603703900 AGO   purse_seines   36.8    292.        1182. TRUE       
+##      mmsi flag  geartype length tonnage engine_power active_2012
+##     &lt;int&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;      
+##  1 6.03e8 AGO   trawlers   32.8    299.         734. FALSE      
+##  2 6.03e8 AGO   trawlers   34.6    396.         865. FALSE      
+##  3 6.03e8 AGO   trawlers   28.8    264.         652. FALSE      
+##  4 6.03e8 AGO   trawlers   30.7    300.         704. FALSE      
+##  5 6.03e8 AGO   trawlers   37.5    406.         851. FALSE      
+##  6 6.03e8 AGO   trawlers   27.4    277.         749. FALSE      
+##  7 6.03e8 AGO   trawlers   32.4    442.         889. FALSE      
+##  8 6.03e8 AGO   trawlers   37.8    444.         887. FALSE      
+##  9 6.03e8 AGO   trawlers   32.4    396.         812. FALSE      
+## 10 6.04e8 AGO   purse_s…   36.8    292.        1182. TRUE       
 ## # ... with more rows, and 4 more variables: active_2013 &lt;lgl&gt;,
 ## #   active_2014 &lt;lgl&gt;, active_2015 &lt;lgl&gt;, active_2016 &lt;lgl&gt;</code></pre>
 <pre class="r"><code>class(fishing_vessels)</code></pre>

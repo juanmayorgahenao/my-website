@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/publication/leveraging-satellite-technology-to-create-true-shark-sanctuaries/</loc>
+      <lastmod>2018-10-09T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication/wealthy-countries-dominate-industrial-fishing/</loc>
       <lastmod>2018-08-01T00:00:00+00:00</lastmod>
     </url>
@@ -123,7 +132,7 @@
     <url>
     
       <loc>/publication_types/2/</loc>
-      <lastmod>2018-08-01T00:00:00+00:00</lastmod>
+      <lastmod>2018-10-09T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -141,28 +150,8 @@
     
     <url>
     
-      <loc>/tags/global-fishing-watch/</loc>
-      <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
       <loc>/</loc>
       <lastmod>2017-10-15T00:00:00-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/pristine-seas/</loc>
-      <lastmod>2016-04-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -182,7 +171,7 @@
     <url>
     
       <loc>/publication_types/</loc>
-      <lastmod>2018-08-01T00:00:00+00:00</lastmod>
+      <lastmod>2018-10-09T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -193,6 +182,26 @@
     
       <loc>/tags/</loc>
       <lastmod>2017-01-01T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/global-fishing-watch/</loc>
+      <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/pristine-seas/</loc>
+      <lastmod>2016-04-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
