@@ -275,7 +275,7 @@ defaultContentLanguageInSubdir = false
 
 [[menu.main]]
   name = "Photography"
-  url = "http://juanmayorga.portfoliobox.net/"
+  url = "https://jsmayorga.smugmug.com/"
   weight = 5
 
 [[menu.main]]
