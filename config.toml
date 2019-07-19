@@ -222,7 +222,7 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "twitter"
     icon_pack = "fa"
-    link = "https://twitter.com/juansmayorga"
+    link = "https://twitter.com/juan_s_mayorga"
 
   [[params.social]]
     icon = "google-scholar"
@@ -242,7 +242,7 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
   icon = "instagram"
   icon_pack = "fa"
-  link = "https://www.instagram.com/juanmayorgaphoto"
+  link = "https://www.instagram.com/juan_s_mayorga"
 
 
 # Navigation Links
